@@ -1,0 +1,57 @@
+﻿Os programas no redes.zip funconam em dois grupos
+
+1. troca de dados usando http: Servidor80.java e Cliente80.java
+
+2. troca de dados sem protocolo padrão: Servidor.java, Cliente.java e 
+ClienteFrame.java
+   
+
+
+Como usar os programas:
+  
+
+Grupo 1:
+
+Execute o Servidor80, ele ficará esperando um cliente. Em seguida
+ no mesmo computador execute um navegador (e.g. internet explorer),
+colocando no endereço "localhost" ou "127.0.0.1". Explique o que 
+acontecerá no navegador.
+    
+    
+Execute o Servidor80 e em seguida, em outra janela de linha de comandos ("cmd" do Windows), no mesmo computador execute o 
+Cliente80. 
+Observe que os dados serão trocados entre eles.
+ No Cliente80 substitua "127.0.0.1" por "www.fc.unesp.br". 
+Observe
+ que na tela do cliente será exibido um texto parcialmente em HTML. 
+
+Explique o que este texto representa e de onde ele vem.
+
+
+Grupo 2
+:
+Execute o programa Servidor (sem 80), ele ficará esperando até três
+ clientes para troca de mensagens. 
+Execute dois programas Cliente
+ (um em cada janela "cmd") e, em seguida, execute o programa 
+ClienteFrame. 
+Neste momento, quatro programas estarão executando 
+ao mesmo tempo, um Servidor, dois Clientes e um ClienteFrame.
+ 
+Digite em qualquer um dos cliente uma mensagem e verifique o que 
+ocorreu. 
+Explique:
+      
+1. O que faz a instrução: "serverSocket.accept();" no Servidor?
+      
+2. Ainda no Servidor, para que servem as instruções:
+
+	- Scanner is = new Scanner(clientSocket.getInputStream());
+           
+	- os[cont++] = new PrintStream(clientSocket.getOutputStream());
+      
+3. Como é possível enviar a mesma mensagem para três clientes 
+praticamente ao mesmo tempo?
+      
+4. Qual a vantagem do ClienteFrame em relação ao Cliente?
+ 
