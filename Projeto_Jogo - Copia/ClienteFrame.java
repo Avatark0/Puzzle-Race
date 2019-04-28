@@ -10,8 +10,6 @@ import java.awt.image.*;
 //QUANTOS TREADS SAO GERADOS POR UMA INSTANCIA DESTA CLASSE?
 public class ClienteFrame extends JFrame implements Runnable, KeyListener {
   static PrintStream os = null;
-  JTextField textField;
-  JTextArea textArea;
 
   //VETOR IMAGEM(CRIAR 1 PARA CADA OBJETO)
   int fundo=0;
@@ -39,7 +37,11 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener {
     public void paintComponent(Graphics g) {
       super.paintComponent(g);
       g.drawImage(imgCenario[fundo], 0, 0, getSize().width, getSize().height, this);
-      g.drawImage(player1.imgPlayer1[player1.spriteFrame], 50, 50, player1.spriteWidth, player1.spriteHeight, this);
+      //g.drawImage(player1.anda[Player1.frame], 50, 50, 155,164,this);
+      switch(Player1.estado){
+        case Player1.ANDA:g.drawImage(player1.anda[Player1.frame], Player1.posX, Player1.posY, Player1.descritor[Player1.estado][Player1.WIDTH2],Player1.descritor[Player1.estado][Player1.HEIGHT2],this);break;
+        case Player1.PULA:g.drawImage(player1.pula[Player1.frame], Player1.posX, Player1.posY, Player1.descritor[Player1.estado][Player1.WIDTH2],Player1.descritor[Player1.estado][Player1.HEIGHT2],this);break;
+      }
       Toolkit.getDefaultToolkit().sync();
     }
   }
@@ -51,22 +53,9 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener {
     
     setPreferredSize(new Dimension(1000, 600));
     add(mapa,BorderLayout.CENTER);
-    /*
-    add(textField = new JTextField(20), BorderLayout.NORTH);
-    add(textArea = new JTextArea(5, 20), BorderLayout.WEST);
-    textField.addActionListener(this);
-    textArea.setEditable(false);
-    //*/
     pack();
     setVisible(true);
     addKeyListener(this);
-    /*
-    textField.addKeyListener(new KeyAdapter(){
-      public void keyPressed(KeyEvent e){
-        int key=e.getKeyCode();
-        System.out.println(key+" pela construtura\n");
-      }
-    });//*/
   }
 
   //EVENTOS DO CLIENTE
@@ -76,11 +65,6 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener {
   }
   public void keyReleased(KeyEvent e){}
   public void keyTyped(KeyEvent e){}
-  /*
-  public void actionPerformed(ActionEvent e) {
-    os.println(textField.getText());
-    textField.setText("");
-  }//*/
 
   //POR QUE INSTANCIAR CLIENTFRAME NO TREAD?
   public static void main(String[] args) {
@@ -103,20 +87,27 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener {
 
     try {
       String inputLine;
-
+      int estadoAnterior=0;
       //INPUTS DO SERVIDOR - AQUI AS AÇOES SAO RECEBIDAS
       do {
-        String line=inputLine=is.nextLine();
-        //textArea.append((line)+"\n");
-        //adicionado if
-        if(line!=""){
+        String line=inputLine=is.nextLine();//O input recebido
           System.out.println(line+" ");
-          if(fundo==1)  fundo=0;
-          else          fundo=1;
-          player1.spriteFrame++;
-          if(player1.spriteFrame==player1.spriteNum)player1.spriteFrame=0;
+          Player1.frame++;
+          //ALTERAR VARIAVEIS ESTATICAS PELO SERVIDOR?
+          if(line.contains("a")){
+            player1.SetEstado(Player1.ANDA); 
+          }
+          if(line.contains("d")){
+            player1.SetEstado(Player1.ANDA);
+          }
+          if(line.contains(" ")){
+            player1.SetEstado(Player1.PULA);
+          }
+          if(Player1.frame>=Player1.descritor[Player1.estado][Player1.NUM])Player1.frame=0;
+          else if(estadoAnterior!=Player1.estado)Player1.frame=0;
+          estadoAnterior=Player1.estado;
+
           repaint();//atualiza a tela grafica(pelo servidor)
-        }
       } while (!inputLine.equals(""));
 
       os.close();

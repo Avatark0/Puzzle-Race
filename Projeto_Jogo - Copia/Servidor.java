@@ -27,9 +27,7 @@ class Servidor {
       }
 
       System.out.println("Accept Funcionou!");
-
       new Servindo(clientSocket).start();
-
     }
 
     try {
@@ -47,18 +45,17 @@ class Servindo extends Thread {
   static PrintStream os[] = new PrintStream[MAXPLAYERS];
   static int cont=0;
 
-  //PRA Q SERVE ESTA LINHA?
+  //PRA Q SERVE ESTA LINHA? - atribui o clientSocket nativo da classe ao Socket clientSocket (variavel)
   Servindo(Socket clientSocket) {
     this.clientSocket = clientSocket;
   }
 
   public void run() {
     try {
-      System.out.println("maxplayers= "+MAXPLAYERS);
       Scanner is = new Scanner(clientSocket.getInputStream());
       os[cont++] = new PrintStream(clientSocket.getOutputStream());
       String inputLine, outputLine;
-
+      System.out.println("cont = "+cont+", maxplayers = "+MAXPLAYERS);
       do {
         //AQUI ESTE TREAD DO SERVIDOR RECEBE A MENSAGEM DO SEU CLIENTE
         inputLine = is.nextLine();
@@ -69,6 +66,7 @@ class Servindo extends Thread {
         }
       } while (!inputLine.equals(""));//CONTROLA O FIM DO LOOP DE IO COM OS CLIENTES
 
+      //ENCERRANDO A CONEXAO
       for (int i=0; i<cont; i++)
         os[i].close();
       is.close();
@@ -80,4 +78,4 @@ class Servindo extends Thread {
       System.out.println("Conexacao terminada pelo cliente");
     }
   }
-};
+}

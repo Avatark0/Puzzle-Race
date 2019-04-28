@@ -25,8 +25,10 @@ Observe que os dados serão trocados entre eles.
 Observe
  que na tela do cliente será exibido um texto parcialmente em HTML. 
 
+
 Explique o que este texto representa e de onde ele vem.
 
+Este texto representa a comunicação entre servidor e cliente, e vem do objeto PrintStream do programa servidor.
 
 Grupo 2
 :
