@@ -66,7 +66,7 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener {
   public void keyReleased(KeyEvent e){}
   public void keyTyped(KeyEvent e){}
 
-  //POR QUE INSTANCIAR CLIENTFRAME NO TREAD?
+  //MAIN - INICIA O TREAD
   public static void main(String[] args) {
     new Thread(new ClienteFrame()).start();
   }
@@ -75,6 +75,7 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener {
     Socket socket = null;
     Scanner is = null;
 
+    //TENTATIVA DE CONEXAO COM O SERVIDOR (como controlar a tentativa, e reconhecer se o servidor esta cheio?): antes de tentar a conexao checar variavel do servidor se ha vagas?
     try {
       socket = new Socket("127.0.0.1", 80);
       os = new PrintStream(socket.getOutputStream(), true);
@@ -90,17 +91,17 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener {
       int estadoAnterior=0;
       //INPUTS DO SERVIDOR - AQUI AS AÇOES SAO RECEBIDAS
       do {
-        String line=inputLine=is.nextLine();//O input recebido
-          System.out.println(line+" ");
+        inputLine=is.nextLine();//O input recebido
+          System.out.println(inputLine+" ");
           Player1.frame++;
           //ALTERAR VARIAVEIS ESTATICAS PELO SERVIDOR?
-          if(line.contains("a")){
+          if(inputLine.contains("a")){
             player1.SetEstado(Player1.ANDA); 
           }
-          if(line.contains("d")){
+          if(inputLine.contains("d")){
             player1.SetEstado(Player1.ANDA);
           }
-          if(line.contains(" ")){
+          if(inputLine.contains(" ")){
             player1.SetEstado(Player1.PULA);
           }
           if(Player1.frame>=Player1.descritor[Player1.estado][Player1.NUM])Player1.frame=0;

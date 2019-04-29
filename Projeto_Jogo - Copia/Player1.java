@@ -39,7 +39,7 @@ public class Player1 extends JFrame{
                         anda[row*(descritor[ANDA][COLS])+col]=ImageIO.read(new File("P1_Anda1.png")).getSubimage(col*descritor[ANDA][WIDTH2],row*descritor[ANDA][HEIGHT2],descritor[ANDA][WIDTH2],descritor[ANDA][HEIGHT2]);
                 for(int row=0;row<descritor[PULA][ROWS];row++)
                     for(int col=0;col<descritor[PULA][COLS];col++)
-                        if((row*(descritor[PULA][COLS])+col)<descritor[PULA][NUM])
+                        if((row*(descritor[PULA][COLS])+col)<descritor[PULA][NUM])//Esta sprite-sheet n e totalmente preenchida
                             pula[row*(descritor[PULA][COLS])+col]=ImageIO.read(new File("P1_Pula.png")).getSubimage(col*descritor[PULA][WIDTH2],row*descritor[PULA][HEIGHT2],descritor[PULA][WIDTH2],descritor[PULA][HEIGHT2]);
                     /*
                 for(int j=0;j<descritor[PULA][ROWS];j++)
@@ -61,6 +61,14 @@ public class Player1 extends JFrame{
     void SetEstado(int set){
         estado=set;
         System.out.println("SetEstado: estado="+Player1.estado);
+    }
+
+    void SetDirection(){
+
+    }
+
+    void SetPosition(){
+
     }
 
     Player1(){
