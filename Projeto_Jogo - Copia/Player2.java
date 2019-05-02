@@ -7,9 +7,9 @@ import java.util.*;
 import javax.imageio.*;
 import java.awt.image.*;
 
-public class Player1 extends JFrame{
-    public static int posX = 0;//Posição do Objeto (0,0 = canto esquerdo soperior)
-    public static int posY = 0;
+public class Player2 extends JFrame{
+    public static int posX = 100;//Posição do Objeto (0,0 = canto esquerdo soperior)
+    public static int posY = 100;
     public static int sizeX = 0;//Tamanho do Objeto
     public static int sizeY = 0;
     public static int estado = 0;//O estado (acao) da classe
@@ -97,7 +97,7 @@ public class Player1 extends JFrame{
         estadoAnterior=estado;
     }
 
-    Player1(){
+    Player2(){
         descritor[ANDA][WIDTH2] = 164;
         descritor[ANDA][HEIGHT2] = 155;
         descritor[ANDA][COLS] = 5;
