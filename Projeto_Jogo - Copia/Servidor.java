@@ -2,8 +2,9 @@ import java.net.*;
 import java.io.*;
 import java.util.*;
 
+//Classes: Servidor, Sala.
 /*
-Sobre o servidor: atualmente o servidor gerencia a conexao de n clientes com a sala, 
+Sobre o servidor: o servidor gerencia a conexao de n clientes com a sala, 
 reconhecendo a desconexão de um cliente específico e liberando a respectiva vaga.
 Caso a sala fique cheia, o servidor entra em loop de 0.5s, checando pela liberação de uma vaga.
 Os clientes checam se há vagas antes de solicitar a conexão.
@@ -40,7 +41,7 @@ class Servidor {
       for(int i=0;i<MAXPLAYERS;i++){
         System.out.println("SERVIDOR: SlotNumber "+i+", slot "+slot[i]+" (false=livre)");
         if(!slot[i]){//slot livre
-          System.out.println("SERVIDOR: Esperando novo cliente para iniciar tread do slot "+i);
+          System.out.println("SERVIDOR: Esperando novo cliente para iniciar thread do slot "+i);
           try {
             clientSocket = serverSocket.accept();
           }catch(IOException e){
@@ -48,7 +49,7 @@ class Servidor {
             System.exit(1);
           }
           System.out.println("SERVIDOR: Accept Funcionou!");
-          new Servindo(clientSocket).start();
+          new Sala(clientSocket).start();
         }
         else clientCount++;
         if(clientCount>=MAXPLAYERS)salaCheia=true;
@@ -74,13 +75,13 @@ class Servidor {
 }
 
 //A SALA
-class Servindo extends Thread{
+class Sala extends Thread{
   Socket clientSocket;
   final static int MAXPLAYERS=Servidor.MAXPLAYERS;
   static PrintStream os[]=new PrintStream[MAXPLAYERS];
   static int cont=0;
 
-  Servindo(Socket clientSocket){
+  Sala(Socket clientSocket){
     this.clientSocket=clientSocket;
   }
 
@@ -103,9 +104,13 @@ class Servindo extends Thread{
       String ESC=new String(ESCAPE);//Mas com certeza ha um jeito melhor...
       System.out.println("SALA: slotNumber "+slotNumber+", cont "+cont+", maxplayers "+MAXPLAYERS);
       do{
-        //AQUI ESTE TREAD DO SERVIDOR RECEBE A MENSAGEM DO SEU CLIENTE
+        //AQUI ESTE THREAD DO SERVIDOR RECEBE A MENSAGEM DO SEU CLIENTE
         inputLine = is.nextLine();
-        //AQUI ESTE TREAD DO SERVIDOR MANDA MENSAGEM PARA UM/TODOS OS CLIENTES (casos especiais como sair do jogo por parte do cliente são lidados apenas com o cliente específico)
+
+        //Em construção
+        GerenteIO gg= new GerenteIO(inputLine,slotNumber);
+
+        //AQUI ESTE THREAD DO SERVIDOR MANDA MENSAGEM PARA UM/TODOS OS CLIENTES (casos especiais como sair do jogo por parte do cliente são lidados apenas com o cliente específico)
         for(int i=0;i<MAXPLAYERS;i++){
           if(Servidor.slot[i]){
             if(inputLine.contains(ESC)&&i==slotNumber){
@@ -123,7 +128,7 @@ class Servindo extends Thread{
             }
           }
         }
-      } while (!inputLine.equals(""));//CONTROLA O FIM DO LOOP DE IO COM OS CLIENTES (botao exit do menu, nenhum jogador na sala, etc)
+      }while(!inputLine.equals(""));//CONTROLA O FIM DO LOOP DE IO COM OS CLIENTES (botao exit do menu, nenhum jogador na sala, etc)
 
       //ENCERRANDO A CONEXAO
       System.out.println("SALA: Encerrando a sala.");

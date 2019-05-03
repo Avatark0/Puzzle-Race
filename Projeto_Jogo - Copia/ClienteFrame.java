@@ -7,6 +7,8 @@ import java.util.*;
 import javax.imageio.*;
 import java.awt.image.*;
 
+//Classes: ClienteFrame.
+
 //QUANTOS TREADS SAO GERADOS POR UMA INSTANCIA DESTA CLASSE?
 public class ClienteFrame extends JFrame implements Runnable, KeyListener{
   static PrintStream os = null;
