@@ -9,7 +9,6 @@ import java.awt.image.*;
 
 //Classes: ClienteFrame.
 
-//QUANTOS TREADS SAO GERADOS POR UMA INSTANCIA DESTA CLASSE?
 public class ClienteFrame extends JFrame implements Runnable, KeyListener{
   static PrintStream os = null;
 
@@ -51,6 +50,11 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener{
         case Player2.PULA:g.drawImage(player2.pula[Player2.frame], Player2.posX, Player2.posY, Player2.descritor[Player2.estado][Player2.WIDTH2],Player2.descritor[Player2.estado][Player2.HEIGHT2],this);break;
       }
       Toolkit.getDefaultToolkit().sync();
+      //limitado pelo controle de frames, chama a função repaint (dentro da paint é ok?)
+      if(GerenteFPS.frameFlag){
+        GerenteFPS.FrameFlag();
+        repaint();//atualiza a tela grafica(pelo servidor)
+      }
     }
   }
 
@@ -77,13 +81,14 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener{
   //MAIN - INICIA O TREAD
   public static void main(String[] args){
     new Thread(new ClienteFrame()).start();
+    new Thread(new GerenteFPS()).start();
   }
 
   public void run(){
     Socket socket=null;
     Scanner is=null;
 
-    //TENTATIVA DE CONEXAO COM O SERVIDOR (como controlar a tentativa, e reconhecer se o servidor esta cheio?): antes de tentar a conexao checar variavel do servidor se ha vagas?
+    //TENTATIVA DE CONEXÃO COM O SERVIDOR
     try{
       while(Servidor.salaCheia)
         Thread.sleep(200);//Intervalo de 0.5 segundos antes de checar o servidor por vagas.
@@ -95,24 +100,24 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener{
     }catch(IOException e){
       System.err.println("CLIENTE: Couldn't get I/O for the connection to host");
     }catch(InterruptedException e){
-      System.out.println("CLIENTE: Problema em Thread.sleep");
+      System.err.println("CLIENTE: Problema em Thread.sleep");
     }
-
+    //CONEXÃO ESTABELECIDA COM SUCESSO
     try {
       String inputLine;
-      
       //INPUTS DO SERVIDOR - AQUI AS AÇOES SAO RECEBIDAS
       do {
         inputLine=is.nextLine();//O input recebido
+        /*
           System.out.println(inputLine+" ");
-          Player1.GerenteAcao(inputLine);
-          Player2.GerenteAcao(inputLine);
-          repaint();//atualiza a tela grafica(pelo servidor)
+          Player1.SetAcao(inputLine);
+          Player2.SetAcao(inputLine);
+        //*/
       } while (!inputLine.equals(""));
-
+      //CONEXÃO ENCERRADA
       os.close();
       is.close();
-      socket.close();//Fechar este socket fecha o socket da vaga deste cliente?
+      socket.close();//Fechar este socket fecha o socket da vaga deste cliente no servidor?
       System.out.println("CLIENTE: Conexao encerrada com exito;");
       System.exit(0);
     } catch(UnknownHostException e){
@@ -120,6 +125,34 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener{
     } catch(IOException e){
       System.err.println("CLIENTE: IOException:  "+e);
     }
+  }
+}
+
+//GERENTE_FPS: Controla a taxa de redesenho da Janela.
+class GerenteFPS extends TimerTask{
+  static long tempoInicio;
+  static long tempoFim=0;
+  static long tempoExecucao=0;
+  static long tempoIntervalo=1000/2;//24 frames/s
+  static boolean frameFlag=false;
+
+  static void FrameFlag(){
+      frameFlag=false;
+  }
+
+  public void run(){
+      try{
+          while(!Servidor.fecharSala){
+              tempoInicio=System.currentTimeMillis();
+              while(System.currentTimeMillis()-tempoInicio<(tempoIntervalo-tempoExecucao));
+              frameFlag=true;
+              if(tempoExecucao>tempoIntervalo)System.out.println("GERENTE_FPS: Frames estao levando muito tempo!");
+              tempoFim=System.currentTimeMillis();
+              tempoExecucao=tempoFim-tempoInicio;
+          }
+      }catch(Exception e){
+          System.err.println("GERENE_FPS: erro");
+      }
   }
 }
 

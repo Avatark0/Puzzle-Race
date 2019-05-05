@@ -58,7 +58,7 @@ class Player1 extends JFrame{
                         cai[j*(descritor[CAI][ROWS])+i]=ImageIO.read(new File("P1_Cai.png")).getSubimage(i*descritor[CAI][WIDTH],j*descritor[CAI][HEIGHT],descritor[CAI][WIDTH],descritor[CAI][HEIGHT]);
                 //*/
             }catch(final RasterFormatException rfe){
-                System.out.println("could not read sprite of size ["+descritor[estado][WIDTH2]+"x"+descritor[estado][HEIGHT2]+"] at position [] from sprite'" +this.getName()+"'");
+                System.err.println("could not read sprite of size ["+descritor[estado][WIDTH2]+"x"+descritor[estado][HEIGHT2]+"] at position [] from sprite'" +this.getName()+"'");
             }catch(IOException e){
                 JOptionPane.showMessageDialog(this,"A imagem nao pode ser carregada!\n"+e,"Erro",JOptionPane.ERROR_MESSAGE);
                 System.exit(1);
@@ -85,7 +85,7 @@ class Player1 extends JFrame{
     }
 
     //Atualmente atualiza o frame do objeto
-    static void GerenteAcao(String inputLine){
+    static void SetAcao(String inputLine){
         frame++;
         if(inputLine.contains("a")){
             SetEstado(ANDA); 
@@ -130,7 +130,7 @@ class Player1 extends JFrame{
     }  
 }
 
-class Player2 extends JFrame{
+class Player2 extends Player1{
     public static int posX = 100;//Posição do Objeto (0,0 = canto esquerdo soperior)
     public static int posY = 100;
     public static int sizeX = 0;//Tamanho do Objeto
@@ -177,7 +177,7 @@ class Player2 extends JFrame{
                         cai[j*(descritor[CAI][ROWS])+i]=ImageIO.read(new File("P1_Cai.png")).getSubimage(i*descritor[CAI][WIDTH],j*descritor[CAI][HEIGHT],descritor[CAI][WIDTH],descritor[CAI][HEIGHT]);
                 //*/
             }catch(final RasterFormatException rfe){
-                System.out.println("could not read sprite of size ["+descritor[estado][WIDTH2]+"x"+descritor[estado][HEIGHT2]+"] at position [] from sprite'" +this.getName()+"'");
+                System.err.println("could not read sprite of size ["+descritor[estado][WIDTH2]+"x"+descritor[estado][HEIGHT2]+"] at position [] from sprite'" +this.getName()+"'");
             }catch(IOException e){
                 JOptionPane.showMessageDialog(this,"A imagem nao pode ser carregada!\n"+e,"Erro",JOptionPane.ERROR_MESSAGE);
                 System.exit(1);
@@ -204,7 +204,7 @@ class Player2 extends JFrame{
     }
 
     //
-    static void GerenteAcao(String inputLine){
+    static void SetAcao(String inputLine){
         frame++;
         if(inputLine.contains("a")){
         SetEstado(ANDA); 
