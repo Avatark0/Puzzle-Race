@@ -63,7 +63,7 @@ class Servidor {
         }
       }
     }
-
+    //Fechando serverSocket. (Em que situação isso deve ser feito?)
     try{
       serverSocket.close();
     }catch(IOException e){
@@ -100,7 +100,7 @@ class Sala extends Thread{
       os[slotNumber]=new PrintStream(clientSocket.getOutputStream());//Estabelece o OutPutStream da sala.
 
       String inputLine;//Input a ser recebido pelo cliente.
-      char ESCAPE[]={(char)(27)};//Não consegui chegar por ESC na inputLine de um jeito melhor...
+      char ESCAPE[]={(char)(27)};//Não consegui checar por ESC na inputLine de um jeito melhor...
       String ESC=new String(ESCAPE);//Mas deve haver um jeito melhor...
       System.out.println("SALA: slotNumber "+slotNumber+", cont "+cont+", maxplayers "+MAXPLAYERS);
       //Loop de leitura dos inputs do cliente.
@@ -108,12 +108,12 @@ class Sala extends Thread{
         inputLine = is.nextLine();
         if(!inputLine.contains(ESC)){
           //Processando as inputLines individuais no output formatado para todos os clientes.
-          GerenteIO.GeraOutput(inputLine,Servidor.MAXPLAYERS,slotNumber);
-            for(int i=0;i<MAXPLAYERS;i++)
-              if(Servidor.slot[i]){
-                os[i].println(GerenteIO.outputString);
-                os[i].flush();
-              }
+          GerenteIO.GeraOutput(inputLine,MAXPLAYERS,slotNumber);
+          for(int i=0;i<MAXPLAYERS;i++)
+            if(Servidor.slot[i]){
+              os[i].println(GerenteIO.outputString);
+              os[i].flush();
+            }
         }
         //Solicitada desconexão por parte do cliente:
         else if(inputLine.contains(ESC)){
@@ -128,7 +128,7 @@ class Sala extends Thread{
 
       //ENCERRANDO A CONEXAO
       System.out.println("SALA: Encerrando a sala.");
-      for(int i=0;i<Servidor.MAXPLAYERS;i++)
+      for(int i=0;i<MAXPLAYERS;i++)
         if(Servidor.slot[i]){
           Servidor.LiberaSlot(i);
           cont--;
@@ -153,12 +153,13 @@ class GerenteIO{
   static boolean outputStringInitialized=false;
 
   //Recebe o input individual de cada Player e processa no output formatado. (Chamado no 'for' de output da Sala)
+  //Synchronized precisa de algum tratamento especial?
   static synchronized void GeraOutput(String inputLine, int maxPlayers, int playerNum){
     //Inicializando a outputString:
     if(!outputStringInitialized){
-        for(int i=0;i<maxPlayers;i++)
-            outputString=outputString.concat("P"+i+":");
-        outputStringInitialized=true;
+      for(int i=0;i<maxPlayers;i++)
+        outputString=outputString.concat("P"+i+":");
+      outputStringInitialized=true;
     }
     //Criando as substrings necessárias para formatação:
     int indexIni=outputString.indexOf("P"+playerNum+":");
@@ -192,6 +193,6 @@ class GerenteIO{
             stringInput=stringInput.concat(" ");
     //Gerando a outputString:
     outputString=stringIni+stringInput+stringEnd;
-    System.out.println("GerenteIO: outputString="+outputString);
+    //System.out.println("GerenteIO: outputString="+outputString);
   }
 }

@@ -9,9 +9,9 @@ import java.awt.image.*;
 
 //Classes: Player1, Player2.
 
-public class Objeto{}
+public class Objeto extends JFrame{}
 
-class Player1 extends JFrame{
+class Player1 extends Objeto{
     public static int posX = 0;//Posição do Objeto (0,0 = canto esquerdo superior)
     public static int posY = 0;
     public static int sizeX = 0;//Tamanho do Objeto
@@ -19,6 +19,9 @@ class Player1 extends JFrame{
     public static int estado = 0;//O estado (acao) da classe
     public static int estadoAnterior = 0;//Utilizado para checar mudança de estado
     public static int frame = 0;//O frame da animação do estado
+    public static int direcao=1;
+    final public static int DIR=1;
+    final public static int ESQ=-1;
     final static int ESTADO_INDEX_SIZE = 4;//Número de spriteSheets da classe
         final static int ANDA = 0;//Index do estado ANDA, etc
         final static int CORRE = 1;
@@ -66,17 +69,32 @@ class Player1 extends JFrame{
         }
     }
 
+    Player1 Classe(){
+        return new Player1();
+    }
+
     //Define o estado (ação) do Objeto
     static void SetEstado(int set){
         estado=set;
-        System.out.println("SetEstado: estado="+estado);
+        //System.out.println("SetEstado: estado="+estado);
     }
 
     //Define a direção que o objeto esta virado
-    static void SetDirection(){}
+    static void SetDirection(String dir){
+        if(dir.contains("a"))direcao=DIR;
+        else if(dir.contains("d"))direcao=ESQ;
+    }
 
     //Define a posição do objeto
-    static void SetPosition(){}
+    static void SetPosition(String mov){
+        if(mov.contains("a"))posX-=2;
+        else if(mov.contains("d"))posX+=2;
+        else if(mov.contains("s"))posY+=1;
+        else if(mov.contains("w"))posY-=1;
+        if(mov.contains(" ")){
+            //Pulo();
+        }
+}
 
     //Retorna um retângulo com a hitBox do Objeto
     static Rectangle HitBox(int posX,int posY,int sizeX,int sizeY){
@@ -85,15 +103,15 @@ class Player1 extends JFrame{
     }
 
     //Atualmente atualiza o frame do objeto
-    static void SetAcao(String inputLine){
+    public static void SetAcao(String input){
         frame++;
-        if(inputLine.contains("a")){
+        if(input.contains("a")){
             SetEstado(ANDA); 
         }
-        if(inputLine.contains("d")){
+        if(input.contains("d")){
             SetEstado(ANDA);
         }
-        if(inputLine.contains(" ")){
+        if(input.contains(" ")){
             SetEstado(PULA);
         }
         if(frame>=descritor[estado][NUM])frame=0;
@@ -133,24 +151,7 @@ class Player1 extends JFrame{
 class Player2 extends Player1{
     public static int posX = 100;//Posição do Objeto (0,0 = canto esquerdo soperior)
     public static int posY = 100;
-    public static int sizeX = 0;//Tamanho do Objeto
-    public static int sizeY = 0;
-    public static int estado = 0;//O estado (acao) da classe
-    public static int estadoAnterior = 0;//Utilizado para checar mudança de estado
-    public static int frame = 0;//O frame da animação do estado
-    final static int ESTADO_INDEX_SIZE = 4;//Número de spriteSheets da classe
-        final static int ANDA = 0;//Index do estado ANDA, etc
-        final static int CORRE = 1;
-        final static int PULA = 2;
-        final static int CAI = 3;
-    final static int PROP_INDEX_SIZE = 5;//Número de propriedades necessárias (sprite padrão = 5)
-        final static int WIDTH2 = 0;//Index do spriteWidth, etc (por um conflito de valores ao usar os nomes WIDTH e HEIGHT, foi adicionado o 2 nos respectivos nomes).
-        final static int HEIGHT2 = 1;
-        final static int COLS = 2;
-        final static int ROWS = 3;
-        final static int NUM = 4;
-    static int[][] descritor = new int[ESTADO_INDEX_SIZE][PROP_INDEX_SIZE];//Associa a spriteSheet do estado (ação) com as variáveis dela
-
+    
     //BufferedImage[] ação = new BufferedImage[descritor[AÇÃO][NUM]];//os sprites cropados (frames) do estado
     BufferedImage[] anda = new BufferedImage[20];//Setar por número. Neste ponto da compilação a váriavel ainda não foi setada. (Essa linha me custou 6 horas).
     BufferedImage[] corre = new BufferedImage[descritor[CORRE][NUM]];
@@ -183,41 +184,6 @@ class Player2 extends Player1{
                 System.exit(1);
             } 
         }
-    }
-
-    //Define o estado (ação) do Objeto
-    static void SetEstado(int set){
-        estado=set;
-        System.out.println("SetEstado: estado="+estado);
-    }
-
-    //Define a direção que o objeto esta virado
-    static void SetDirection(){}
-
-    //Define a posição do objeto
-    static void SetPosition(){}
-
-    //Retorna um retângulo com a hitBox do Objeto
-    static Rectangle HitBox(int posX,int posY,int sizeX,int sizeY){
-        Rectangle hitBox= new Rectangle(posX,posY,sizeX,sizeY);
-        return hitBox;
-    }
-
-    //
-    static void SetAcao(String inputLine){
-        frame++;
-        if(inputLine.contains("a")){
-        SetEstado(ANDA); 
-        }
-        if(inputLine.contains("d")){
-        SetEstado(ANDA);
-        }
-        if(inputLine.contains(" ")){
-        SetEstado(PULA);
-        }
-        if(frame>=descritor[estado][NUM])frame=0;
-        else if(estadoAnterior!=estado)frame=0;
-        estadoAnterior=estado;
     }
 
     Player2(){
