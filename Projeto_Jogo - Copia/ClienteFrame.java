@@ -21,12 +21,12 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener{
   BufferedImage[] imgCenario=new BufferedImage[2];
   Image[] imgItens  =new Image[2];
   
-  //JANELA GRAFICA DO CLIENTE: CLASSE INTERNA, GERENCIA AS IMAGENS (passar para classe externa?)
+  //JANELA GRAFICA DO CLIENTE: CLASSE INTERNA, GERENCIA AS IMAGENS (passar para classe externa? Quais as vantegens/desvangens de ser uma classe interna?)
   class Janela extends JPanel{
     //Determina propriedades da janela (atualmente carrega alguns sprites, mas o carregamento será movido para as próprias classes)
     Janela(){
       try{
-        setPreferredSize(new Dimension(1000, 600));
+        setPreferredSize(new Dimension(300, 300));
         imgCenario[0]=ImageIO.read(new File("fundo.jpeg"));
         imgCenario[1]=ImageIO.read(new File("fundo2.jpeg"));
       }catch(IOException e){
@@ -41,36 +41,26 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener{
       g.drawImage(imgCenario[fundo], 0, 0, getSize().width, getSize().height, this);
       
       switch(Player1.estado){
-        case Player1.ANDA:g.drawImage(player1.anda[Player1.frame], Player1.posX*Player1.direcao, Player1.posY, Player1.descritor[Player1.estado][Player1.WIDTH2],Player1.descritor[Player1.estado][Player1.HEIGHT2],this);break;
-        case Player1.PULA:g.drawImage(player1.pula[Player1.frame], Player1.posX*Player1.direcao, Player1.posY, Player1.descritor[Player1.estado][Player1.WIDTH2],Player1.descritor[Player1.estado][Player1.HEIGHT2],this);break;
+        case Player1.ANDA:g.drawImage(player1.anda[Player1.frame], Player1.posX+Player1.direcaoReajuste, Player1.posY, Player1.direcao*Player1.descritor[Player1.estado][Player1.WIDTH2],Player1.descritor[Player1.estado][Player1.HEIGHT2],this);break;
+        case Player1.PULA:g.drawImage(player1.pula[Player1.frame], Player1.posX+Player1.direcaoReajuste, Player1.posY, Player1.direcao*Player1.descritor[Player1.estado][Player1.WIDTH2],Player1.descritor[Player1.estado][Player1.HEIGHT2],this);break;
       }
       switch(Player2.estado){
-        case Player2.ANDA:g.drawImage(player2.anda[Player2.frame], Player2.posX*Player2.direcao, Player2.posY, Player2.descritor[Player2.estado][Player2.WIDTH2],Player2.descritor[Player2.estado][Player2.HEIGHT2],this);break;
-        case Player2.PULA:g.drawImage(player2.pula[Player2.frame], Player2.posX*Player2.direcao, Player2.posY, Player2.descritor[Player2.estado][Player2.WIDTH2],Player2.descritor[Player2.estado][Player2.HEIGHT2],this);break;
+        case Player2.ANDA:g.drawImage(player2.anda[Player2.frame], Player2.posX+Player2.direcaoReajuste, Player2.posY, Player2.direcao*Player2.descritor[Player2.estado][Player2.WIDTH2],Player2.descritor[Player2.estado][Player2.HEIGHT2],this);break;
+        case Player2.PULA:g.drawImage(player2.pula[Player2.frame], Player2.posX+Player2.direcaoReajuste, Player2.posY, Player2.direcao*Player2.descritor[Player2.estado][Player2.WIDTH2],Player2.descritor[Player2.estado][Player2.HEIGHT2],this);break;
       }
       Toolkit.getDefaultToolkit().sync();
     }
   }
 
-  //Construtor: instancia a Janela.
+  //Construtor: instancia a Janela. Onde devem ser definidas as propriedades da janela? Aqui? No contrutor de Janela?
   ClienteFrame(){
     super("Cliente do chat");
     janela=new Janela();//instancia a janela grafica do jogo
-    
-    setPreferredSize(new Dimension(1000,600));
+    setPreferredSize(new Dimension(300,300));//PreferredSize é chamado duas vezes (aqui e em Janela()). É necessário?
     add(janela,BorderLayout.CENTER);
     pack();
     setVisible(true);
     addKeyListener(this);
-  }
-
-  //Reseta a outputString deste jogador (chamado pelo gerenteFPS).
-  static char DELETE[]={(char)(127)};
-  static String DEL=new String(DELETE);
-  static void ResetThisOutputString(){
-    //os.println(DEL);
-    //Talvez utilizar uma string unica para manter todos os comandos não seja a melhor solução.
-    //será investigada agora uma solução mais simples.
   }
 
   //EVENTOS DO CLIENTE (os inputs do jogador)
@@ -90,7 +80,6 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener{
   public void run(){
     Socket socket=null;
     Scanner is=null;
-
     //TENTATIVA DE CONEXÃO COM O SERVIDOR
     try{
       while(Servidor.salaCheia)
@@ -109,34 +98,16 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener{
     try{
       int maxPlayers=Sala.MAXPLAYERS;
       Player1[] playerArray=new Player1[maxPlayers];
-      for(int i=0;i<maxPlayers;i++){
-        playerArray[i]=new Player1();
-      }
-      int indexIni;
-      int indexEnd;
-      String inputLine;
-      String input;
-
+      playerArray[0]=new Player1();
+      playerArray[1]=new Player2();
+      String inputLine; 
       //INPUTS DO SERVIDOR - AQUI AS AÇOES SAO RECEBIDAS
       do {
         inputLine=is.nextLine();//O input recebido
-        for(int i=0;i<maxPlayers;i++){
-          indexIni=3+inputLine.indexOf("P"+i+":");//identificador (Pi:) + 3
-          if(i+1<maxPlayers){
-            indexEnd=inputLine.indexOf("P"+(i+1)+":");//identificador seguinte
-            input=inputLine.substring(indexIni,indexEnd);
-          }
-          else input=inputLine.substring(indexIni);
-          //System.out.println(playerArray[i].getClass());
-          //if(input.contains("a"))(playerArray[i].getClass()).SetAcao("a");//Corrigir uso do getClass
-          if(input.contains("a"))Player1.SetAcao(input);
-        }
-        /*
-          System.out.println(inputLine+" ");
-          Player1.SetAcao(inputLine);
-          Player2.SetAcao(inputLine);
-        //*/
-      } while (!inputLine.equals(""));
+        System.out.println("CLIENTE: inputLine="+inputLine);
+        if(inputLine.contains("0"))playerArray[0].ExecutaAcao(inputLine);
+        if(inputLine.contains("1"))playerArray[1].ExecutaAcao(inputLine);
+      }while(!inputLine.equals(""));
       //CONEXÃO ENCERRADA
       os.close();
       is.close();
@@ -157,19 +128,13 @@ class GerenteFPS extends TimerTask{
   static long tempoFim=0;
   static long tempoExecucao=0;
   static long tempoIntervalo=1000/24;//intenção futura: 24 frames/s
-  static boolean frameFlag=false;
-
-  static void FrameFlag(){
-      frameFlag=false;
-  }
 
   public void run(){
     try{
       while(!Servidor.fecharSala){//Qual condição de encerramento do loop seria mais adequada? Acessar a var do Servidor é custoso?
         tempoInicio=System.currentTimeMillis();
-        while(System.currentTimeMillis()-tempoInicio<(tempoIntervalo-tempoExecucao));//Espera pelo tempo so frame. Está correto?
+        while(System.currentTimeMillis()-tempoInicio<(tempoIntervalo-tempoExecucao));//Espera pelo tempo do frame. Está correto?
         ClienteFrame.janela.repaint();//Atualiza a janela gráfica (pelo cliente).
-        ClienteFrame.ResetThisOutputString();
         tempoFim=System.currentTimeMillis();
         tempoExecucao=tempoFim-tempoInicio;
         if(tempoExecucao>tempoIntervalo*2)System.out.println("GERENTE_FPS: Frames atrasando! tempoExecucao: "+tempoExecucao+", tempoIntervalo: "+tempoIntervalo);

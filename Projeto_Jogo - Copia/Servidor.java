@@ -102,22 +102,17 @@ class Sala extends Thread{
       String inputLine;//Input a ser recebido pelo cliente.
       char ESCAPE[]={(char)(27)};//Não consegui checar por ESC na inputLine de um jeito melhor...
       String ESC=new String(ESCAPE);//Mas deve haver um jeito melhor...
-      char DELETE[]={(char)(127)};
-      String DEL=new String(DELETE);
       System.out.println("SALA: slotNumber "+slotNumber+", cont "+cont+", maxplayers "+MAXPLAYERS);
       //Loop de leitura dos inputs do cliente.
       do{
         inputLine = is.nextLine();
-        if(!inputLine.contains(ESC)&&!inputLine.contains(DEL)){
-          //Processando as inputLines individuais no output formatado para todos os clientes.
-          GerenteIO.GeraOutput(inputLine,MAXPLAYERS,slotNumber);
+        if(!inputLine.contains(ESC)){
           for(int i=0;i<MAXPLAYERS;i++)
             if(Servidor.slot[i]){
-              os[i].println(GerenteIO.outputString);
+              os[i].println(slotNumber+":"+inputLine);
               os[i].flush();
             }
         }
-        else if(inputLine.contains(DEL))GerenteIO.ResetOutputPi(slotNumber);
         //Solicitada desconexão por parte do cliente:
         else if(inputLine.contains(ESC)){
           os[slotNumber].println("");
@@ -149,7 +144,8 @@ class Sala extends Thread{
     }
   }
 }
-
+/*
+//LEGADO.
 //GERENTE_IO: Padroniza o Input recebido pelos Clientes numa outputString única.
 class GerenteIO{
   static String outputString="";//OutPut formatado, será passado a todos os jogadores.
@@ -208,4 +204,4 @@ class GerenteIO{
     outputString=stringIni+stringInput+stringEnd;
     //System.out.println("GerenteIO: outputString="+outputString);
   }
-}
+}//*/
