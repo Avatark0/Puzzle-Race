@@ -102,11 +102,13 @@ class Sala extends Thread{
       String inputLine;//Input a ser recebido pelo cliente.
       char ESCAPE[]={(char)(27)};//Não consegui checar por ESC na inputLine de um jeito melhor...
       String ESC=new String(ESCAPE);//Mas deve haver um jeito melhor...
+      char DELETE[]={(char)(127)};
+      String DEL=new String(DELETE);
       System.out.println("SALA: slotNumber "+slotNumber+", cont "+cont+", maxplayers "+MAXPLAYERS);
       //Loop de leitura dos inputs do cliente.
       do{
         inputLine = is.nextLine();
-        if(!inputLine.contains(ESC)){
+        if(!inputLine.contains(ESC)&&!inputLine.contains(DEL)){
           //Processando as inputLines individuais no output formatado para todos os clientes.
           GerenteIO.GeraOutput(inputLine,MAXPLAYERS,slotNumber);
           for(int i=0;i<MAXPLAYERS;i++)
@@ -115,6 +117,7 @@ class Sala extends Thread{
               os[i].flush();
             }
         }
+        else if(inputLine.contains(DEL))GerenteIO.ResetOutputPi(slotNumber);
         //Solicitada desconexão por parte do cliente:
         else if(inputLine.contains(ESC)){
           os[slotNumber].println("");
@@ -151,6 +154,16 @@ class Sala extends Thread{
 class GerenteIO{
   static String outputString="";//OutPut formatado, será passado a todos os jogadores.
   static boolean outputStringInitialized=false;
+
+  static synchronized void ResetOutputPi(int playerNum){
+    int indexIni=outputString.indexOf("P"+playerNum+":");
+    int indexEnd=outputString.indexOf("P"+(playerNum+1)+":");
+    String stringIni=outputString.substring(0,indexIni+3);
+    String stringEnd;
+    if(indexEnd>=0)stringEnd=outputString.substring(indexEnd);
+    else stringEnd="";
+    outputString=stringIni+stringEnd;
+  }
 
   //Recebe o input individual de cada Player e processa no output formatado. (Chamado no 'for' de output da Sala)
   //Synchronized precisa de algum tratamento especial?

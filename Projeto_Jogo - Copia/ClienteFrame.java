@@ -64,6 +64,15 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener{
     addKeyListener(this);
   }
 
+  //Reseta a outputString deste jogador (chamado pelo gerenteFPS).
+  static char DELETE[]={(char)(127)};
+  static String DEL=new String(DELETE);
+  static void ResetThisOutputString(){
+    //os.println(DEL);
+    //Talvez utilizar uma string unica para manter todos os comandos não seja a melhor solução.
+    //será investigada agora uma solução mais simples.
+  }
+
   //EVENTOS DO CLIENTE (os inputs do jogador)
   public void keyPressed(KeyEvent e){
     char key=e.getKeyChar();
@@ -160,6 +169,7 @@ class GerenteFPS extends TimerTask{
         tempoInicio=System.currentTimeMillis();
         while(System.currentTimeMillis()-tempoInicio<(tempoIntervalo-tempoExecucao));//Espera pelo tempo so frame. Está correto?
         ClienteFrame.janela.repaint();//Atualiza a janela gráfica (pelo cliente).
+        ClienteFrame.ResetThisOutputString();
         tempoFim=System.currentTimeMillis();
         tempoExecucao=tempoFim-tempoInicio;
         if(tempoExecucao>tempoIntervalo*2)System.out.println("GERENTE_FPS: Frames atrasando! tempoExecucao: "+tempoExecucao+", tempoIntervalo: "+tempoIntervalo);
