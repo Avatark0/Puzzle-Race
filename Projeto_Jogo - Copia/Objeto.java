@@ -28,18 +28,23 @@ public class Objeto extends JFrame{
 class Player1 extends Objeto{
     //Decritores (devem ser redeclarados para o player2, caso contrario eles são compartilhados entre as classes).
     static int[][] descritor = new int[ESTADO_INDEX_SIZE][PROP_INDEX_SIZE];//Associa a spriteSheet do estado (ação) com as variáveis dela
-    public static int posX = 0;//Posição do Objeto (0,0 = canto esquerdo superior)
-    public static int posY = 0;
-    public static int sizeX = 50;//Tamanho do Objeto
-    public static int sizeY = 50;
+    public static int posX = 50;//Posição do Objeto (0,0 = canto esquerdo superior)
+    public static int posY = 20;
+    public static int sizeX = 20;//Tamanho do Objeto
+    public static int sizeY = 75;
     public static int estado = 0;//O estado (acao) da classe
     public static int estadoAnterior = 0;//Utilizado para checar mudança de estado
     public static int frame = 0;//O frame da animação do estado
     public static int direcao=1;
     public static int direcaoReajuste=0;
 
+    static int sdifX=8;//Diferença de posição do centro da hitBox com o centro do sprite
+    static int sdifY=-19;
+    static int sposX=0;//Inicializado no construtor
+    static int sposY=0;
+
     //BufferedImage[] ação = new BufferedImage[descritor[AÇÃO][NUM]];//os sprites cropados (frames) do estado
-    BufferedImage[] anda = new BufferedImage[20];//Setar por número. Neste ponto da compilação a váriavel ainda não foi setada. (Essa linha me custou 6 horas).
+    BufferedImage[] anda = new BufferedImage[20];//Setar por número. Neste ponto da compilação a váriavel ainda não foi setada. (6 horas).
     BufferedImage[] corre = new BufferedImage[descritor[CORRE][NUM]];
     BufferedImage[] pula = new BufferedImage[51];
     BufferedImage[] cai = new BufferedImage[descritor[CAI][NUM]];
@@ -72,7 +77,7 @@ class Player1 extends Objeto{
             } 
         }
     }
-
+    /********************************************************************************************************************************/
     //Define o estado (ação) do Objeto
     static void SetEstado(int set){
         estado=set;
@@ -81,10 +86,10 @@ class Player1 extends Objeto{
 
     //Define a posição do objeto
     static void SetPosition(String mov){
-        if(mov.contains("a"))posX-=2;
-        else if(mov.contains("d"))posX+=2;
-        else if(mov.contains("s"))posY+=1;
-        else if(mov.contains("w"))posY-=1;
+        if(mov.contains("a")){posX-=2;sposX-=2;}
+        else if(mov.contains("d")){posX+=2;sposX+=2;}
+        else if(mov.contains("s")){posY+=1;sposY+=1;}
+        else if(mov.contains("w")){posY-=1;sposY-=1;}
         if(mov.contains(" ")){
             //Pulo();
         }
@@ -92,15 +97,15 @@ class Player1 extends Objeto{
 
     //Retorna um retângulo com a hitBox do Objeto
     static Rectangle HitBox(){
-        Rectangle hitBox= new Rectangle(posX+(descritor[estado][WIDTH2]-sizeX)/2,posY+(descritor[estado][HEIGHT2]-sizeY)/2,sizeX,sizeY);
+        Rectangle hitBox= new Rectangle(posX,posY,sizeX,sizeY);
         return hitBox;
     }
 
     //Atualmente atualiza o frame do objeto
     public void ExecutaAcao(String input){
         frame++;
-        if(HitBox().intersects(Player2.HitBox()))System.out.println("Player1: Colidiu com P2");
-        else System.out.println("Player1: Colisao nao detectada");
+        if(HitBox().intersects(Player2.HitBox()))System.out.println("Player: Colidiu com P");
+        else System.out.println("Player: Colisao nao detectada");
         if(input.contains("a")||input.contains("A")){
             SetEstado(ANDA);
             direcao=ESQ;
@@ -110,7 +115,7 @@ class Player1 extends Objeto{
         else if(input.contains("d")||input.contains("D")){
             SetEstado(ANDA);
             direcao=DIR;
-            direcaoReajuste=descritor[ANDA][WIDTH2];
+            direcaoReajuste=descritor[ANDA][WIDTH2]-sdifX*2;
             SetPosition("d");
         }
         else if(input.contains("w")||input.contains("W")){
@@ -127,6 +132,7 @@ class Player1 extends Objeto{
         estadoAnterior=estado;
     }
 
+    /********************************************************************************************************************************/
     Player1(){
         descritor[ANDA][WIDTH2] = 164;
         descritor[ANDA][HEIGHT2] = 155;
@@ -150,21 +156,29 @@ class Player1 extends Objeto{
         descritor[CAI][ROWS] = 0;
         descritor[CAI][NUM] = 0;
         //*/
+        sposX=posX-(descritor[ANDA][WIDTH2]-sizeX)/2+sdifX;
+        sposY=posY-(descritor[ANDA][HEIGHT2]-sizeY)/2+sdifY;
+        
         new CropSpriteSheet();
     }  
 }
 
 class Player2 extends Player1{
     static int[][] descritor = new int[ESTADO_INDEX_SIZE][PROP_INDEX_SIZE];//Associa a spriteSheet do estado (ação) com as variáveis dela
-    public static int posX = 100;//Posição do Objeto (0,0 = canto esquerdo soperior)
+    public static int posX = 150;//Posição da hitBox (0,0 = canto esquerdo superior)
     public static int posY = 100;
-    public static int sizeX = 50;//Tamanho do Objeto
-    public static int sizeY = 50;
+    public static int sizeX = 20;//Tamanho da hitBox
+    public static int sizeY = 75;
     public static int estado = 0;//O estado (acao) da classe
     public static int estadoAnterior = 0;//Utilizado para checar mudança de estado
     public static int frame = 0;//O frame da animação do estado
     public static int direcao=1;
     public static int direcaoReajuste=0;
+
+    static int sdifX=11;//Diferença de posição do centro da hitBox com o centro do sprite (possibilidade dos sinais estarem invertidos)
+    static int sdifY=-12;
+    static int sposX=0;//Inicializado no construtor
+    static int sposY=0;
     
     //BufferedImage[] ação = new BufferedImage[descritor[AÇÃO][NUM]];//os sprites cropados (frames) do estado
     BufferedImage[] anda = new BufferedImage[20];//Setar por número. Neste ponto da compilação a váriavel ainda não foi setada. (Essa linha me custou 6 horas).
@@ -199,8 +213,8 @@ class Player2 extends Player1{
                 System.exit(1);
             } 
         }
-    }
-
+    }  
+    /********************************************************************************************************************************/
     //Define o estado (ação) do Objeto
     static void SetEstado(int set){
         estado=set;
@@ -209,20 +223,26 @@ class Player2 extends Player1{
 
     //Define a posição do objeto
     static void SetPosition(String mov){
-        if(mov.contains("a"))posX-=2;
-        else if(mov.contains("d"))posX+=2;
-        else if(mov.contains("s"))posY+=1;
-        else if(mov.contains("w"))posY-=1;
+        if(mov.contains("a")){posX-=2;sposX-=2;}
+        else if(mov.contains("d")){posX+=2;sposX+=2;}
+        else if(mov.contains("s")){posY+=1;sposY+=1;}
+        else if(mov.contains("w")){posY-=1;sposY-=1;}
         if(mov.contains(" ")){
             //Pulo();
         }
     }
 
+    //Retorna um retângulo com a hitBox do Objeto
+    static Rectangle HitBox(){
+        Rectangle hitBox= new Rectangle(posX,posY,sizeX,sizeY);
+        return hitBox;
+    }
+
     //Atualmente atualiza o frame do objeto
     public void ExecutaAcao(String input){
         frame++;
-        if(HitBox().intersects(Player1.HitBox()))System.out.println("Player2: Colidiu com P1");
-        else System.out.println("Player2: Colisao nao detectada");
+        if(HitBox().intersects(Player1.HitBox()))System.out.println("Player: Colidiu com P");
+        else System.out.println("Player: Colisao nao detectada");
         if(input.contains("a")||input.contains("A")){
             SetEstado(ANDA);
             direcao=ESQ;
@@ -232,7 +252,7 @@ class Player2 extends Player1{
         else if(input.contains("d")||input.contains("D")){
             SetEstado(ANDA);
             direcao=DIR;
-            direcaoReajuste=descritor[ANDA][WIDTH2];
+            direcaoReajuste=descritor[ANDA][WIDTH2]-sdifX*2;
             SetPosition("d");
         }
         else if(input.contains("w")||input.contains("W")){
@@ -248,13 +268,7 @@ class Player2 extends Player1{
         else if(estadoAnterior!=estado)frame=0;
         estadoAnterior=estado;
     }
-
-    //Retorna um retângulo com a hitBox do Objeto
-    static Rectangle HitBox(){
-        Rectangle hitBox= new Rectangle(posX,posY,sizeX,sizeY);
-        return hitBox;
-    }
-
+    /********************************************************************************************************************************/
     Player2(){
         descritor[ANDA][WIDTH2] = 124;
         descritor[ANDA][HEIGHT2] = 141;
@@ -278,6 +292,9 @@ class Player2 extends Player1{
         descritor[CAI][ROWS] = 0;
         descritor[CAI][NUM] = 0;
         //*/
+        sposX=posX-(descritor[ANDA][WIDTH2]-sizeX)/2+sdifX;
+        sposY=posY-(descritor[ANDA][HEIGHT2]-sizeY)/2+sdifY;
+
         new CropSpriteSheet();
     }  
 }

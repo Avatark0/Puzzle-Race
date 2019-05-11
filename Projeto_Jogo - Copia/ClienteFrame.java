@@ -39,15 +39,15 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener{
     public void paintComponent(Graphics g){
       super.paintComponent(g);
       g.drawImage(imgCenario[fundo], 0, 0, getSize().width, getSize().height, this);
-      g.drawRect(Player1.posX+(Player1.descritor[Player1.estado][Player1.WIDTH2]-Player1.sizeX)/2,Player1.posY+(Player1.descritor[Player1.estado][Player1.HEIGHT2]-Player1.sizeY)/2,Player1.sizeX,Player1.sizeY);
-      g.drawRect(Player2.posX,Player2.posY,Player2.sizeX,Player2.sizeY);
+      g.drawRect(Player1.HitBox().x,Player1.HitBox().y,Player1.HitBox().width,Player1.HitBox().height);
+      g.drawRect(Player2.HitBox().x,Player2.HitBox().y,Player2.HitBox().width,Player2.HitBox().height);
       switch(Player1.estado){
-        case Player1.ANDA:g.drawImage(player1.anda[Player1.frame], Player1.posX+Player1.direcaoReajuste, Player1.posY, Player1.direcao*Player1.descritor[Player1.estado][Player1.WIDTH2],Player1.descritor[Player1.estado][Player1.HEIGHT2],this);break;
-        case Player1.PULA:g.drawImage(player1.pula[Player1.frame], Player1.posX+Player1.direcaoReajuste, Player1.posY, Player1.direcao*Player1.descritor[Player1.estado][Player1.WIDTH2],Player1.descritor[Player1.estado][Player1.HEIGHT2],this);break;
+        case Player1.ANDA:g.drawImage(player1.anda[Player1.frame], Player1.sposX+Player1.direcaoReajuste, Player1.sposY, Player1.direcao*Player1.descritor[Player1.estado][Player1.WIDTH2],Player1.descritor[Player1.estado][Player1.HEIGHT2],this);break;
+        case Player1.PULA:g.drawImage(player1.pula[Player1.frame], Player1.sposX+Player1.direcaoReajuste, Player1.sposY, Player1.direcao*Player1.descritor[Player1.estado][Player1.WIDTH2],Player1.descritor[Player1.estado][Player1.HEIGHT2],this);break;
       }
       switch(Player2.estado){
-        case Player2.ANDA:g.drawImage(player2.anda[Player2.frame], Player2.posX+Player2.direcaoReajuste, Player2.posY, Player2.direcao*Player2.descritor[Player2.estado][Player2.WIDTH2],Player2.descritor[Player2.estado][Player2.HEIGHT2],this);break;
-        case Player2.PULA:g.drawImage(player2.pula[Player2.frame], Player2.posX+Player2.direcaoReajuste, Player2.posY, Player2.direcao*Player2.descritor[Player2.estado][Player2.WIDTH2],Player2.descritor[Player2.estado][Player2.HEIGHT2],this);break;
+        case Player2.ANDA:g.drawImage(player2.anda[Player2.frame], Player2.sposX+Player2.direcaoReajuste, Player2.sposY, Player2.direcao*Player2.descritor[Player2.estado][Player2.WIDTH2],Player2.descritor[Player2.estado][Player2.HEIGHT2],this);break;
+        case Player2.PULA:g.drawImage(player2.pula[Player2.frame], Player2.sposX+Player2.direcaoReajuste, Player2.sposY, Player2.direcao*Player2.descritor[Player2.estado][Player2.WIDTH2],Player2.descritor[Player2.estado][Player2.HEIGHT2],this);break;
       }
       Toolkit.getDefaultToolkit().sync();
     }
