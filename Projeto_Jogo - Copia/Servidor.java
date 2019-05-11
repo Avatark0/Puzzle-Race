@@ -28,22 +28,22 @@ class Servidor {
   public static void main(String[] args){
     ServerSocket serverSocket=null;
     try{
-      serverSocket = new ServerSocket(80);
+      serverSocket=new ServerSocket(80);
     }catch(IOException e){
-      System.err.println("SERVIDOR: Could not listen on port: " + 80 + ", " + e);
+      System.err.println("SERVIDOR: Could not listen on port: "+80+", "+e);
       System.exit(1);
     }
     //BUG: SERVIDOR PERMITE QUE UM CLIENTE EXTRA ENTRE OCUPANDO A VAGA DO CLIENTE 0 (APOS TODAS AS OUTRAS VAGAS SEREM PREENCHIDAS)-Contornado pela checagem de vagas pelo cliente antes de solicitar a conexão.
     while(!fecharSala){//Fechar a sala quando estiver cheia? Qual a condicao?
       int clientCount=0;
-      Socket clientSocket = null;
+      Socket clientSocket=null;
       for(int i=0;i<MAXPLAYERS;i++){
         if(!slot[i]){//slot livre
           System.out.println("SERVIDOR: Esperando novo cliente para iniciar thread do slot "+i);
-          try {
-            clientSocket = serverSocket.accept();
+          try{
+            clientSocket=serverSocket.accept();
           }catch(IOException e){
-            System.err.println("SERVIDOR: Accept falhou: " + 80 + ", " + e);
+            System.err.println("SERVIDOR: Accept falhou: "+80+", "+e);
             System.exit(1);
           }
           System.out.println("SERVIDOR: Accept slot "+i+" funcionou!");
@@ -57,7 +57,7 @@ class Servidor {
             Thread.sleep(2000);//Espere de 2 segundos antes de checar se há vagas na sala. (Evita processamento desnecessário)
           }
           Thread.sleep(200);//Espera de 0.2 segundos. Evita que o Servidor tente ocupar a última vaga novamente (antes da SALA mudar seu estado para ocupado)
-          System.out.println("SERVIDOR: Reiniciando loop de busca por clientes.");
+          System.out.println("SERVIDOR: Reiniciando loop de busca por clientes");
         }catch(InterruptedException e){
           System.err.println("SERVIDOR: Problema em Thread.sleep");
         }
@@ -125,7 +125,7 @@ class Sala extends Thread{
       }while(!inputLine.equals(""));//CONTROLA O FIM DO LOOP DE IO COM OS CLIENTES. SAIR DESTE LOOP ENCERRA TODAS AS INTÂNCIAS DE SALA.
 
       //ENCERRANDO A CONEXAO
-      System.out.println("SALA: Encerrando a sala.");
+      System.out.println("SALA: Encerrando a sala");
       for(int i=0;i<MAXPLAYERS;i++)
         if(Servidor.slot[i]){
           Servidor.LiberaSlot(i);

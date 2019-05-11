@@ -19,7 +19,7 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener{
   Player2 player2=new Player2();
   
   BufferedImage[] imgCenario=new BufferedImage[2];
-  Image[] imgItens  =new Image[2];
+  Image[] imgItens=new Image[2];
   
   //JANELA GRAFICA DO CLIENTE: CLASSE INTERNA, GERENCIA AS IMAGENS (passar para classe externa? Quais as vantegens/desvangens de ser uma classe interna?)
   class Janela extends JPanel{
@@ -39,7 +39,8 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener{
     public void paintComponent(Graphics g){
       super.paintComponent(g);
       g.drawImage(imgCenario[fundo], 0, 0, getSize().width, getSize().height, this);
-      
+      g.drawRect(Player1.posX+(Player1.descritor[Player1.estado][Player1.WIDTH2]-Player1.sizeX)/2,Player1.posY+(Player1.descritor[Player1.estado][Player1.HEIGHT2]-Player1.sizeY)/2,Player1.sizeX,Player1.sizeY);
+      g.drawRect(Player2.posX,Player2.posY,Player2.sizeX,Player2.sizeY);
       switch(Player1.estado){
         case Player1.ANDA:g.drawImage(player1.anda[Player1.frame], Player1.posX+Player1.direcaoReajuste, Player1.posY, Player1.direcao*Player1.descritor[Player1.estado][Player1.WIDTH2],Player1.descritor[Player1.estado][Player1.HEIGHT2],this);break;
         case Player1.PULA:g.drawImage(player1.pula[Player1.frame], Player1.posX+Player1.direcaoReajuste, Player1.posY, Player1.direcao*Player1.descritor[Player1.estado][Player1.WIDTH2],Player1.descritor[Player1.estado][Player1.HEIGHT2],this);break;
@@ -64,7 +65,7 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener{
   }
 
   //EVENTOS DO CLIENTE (os inputs do jogador)
-  public void keyPressed(KeyEvent e){
+  public synchronized void keyPressed(KeyEvent e){//Como reconhecer imputs compostos? (pulo+a, shif+a, etc) eles são recebidos separadamente. Como lidar com o shift?
     char key=e.getKeyChar();
     os.println(key);
   }
@@ -88,7 +89,7 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener{
       os=new PrintStream(socket.getOutputStream(), true);
       is=new Scanner(socket.getInputStream());
     }catch(UnknownHostException e){
-      System.err.println("CLIENTE: Don't know about host.");
+      System.err.println("CLIENTE: Don't know about host");
     }catch(IOException e){
       System.err.println("CLIENTE: Couldn't get I/O for the connection to host");
     }catch(InterruptedException e){
@@ -112,7 +113,7 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener{
       os.close();
       is.close();
       socket.close();//Fechar este socket fecha o socket da vaga deste cliente no servidor?
-      System.out.println("CLIENTE: Conexao encerrada com exito;");
+      System.out.println("CLIENTE: Conexao encerrada com exito");
       System.exit(0);
     } catch(UnknownHostException e){
       System.err.println("CLIENTE: Trying to connect to unknown host: "+e);
@@ -127,21 +128,22 @@ class GerenteFPS extends TimerTask{
   static long tempoInicio;
   static long tempoFim=0;
   static long tempoExecucao=0;
-  static long tempoIntervalo=1000/24;//intenção futura: 24 frames/s
+  static long tempoIntervalo=1000/24;//intenção futura: 24 frames/s (velocidade reduzida!)
 
-  public void run(){
+  public synchronized void run(){
     try{
       while(!Servidor.fecharSala){//Qual condição de encerramento do loop seria mais adequada? Acessar a var do Servidor é custoso?
         tempoInicio=System.currentTimeMillis();
-        while(System.currentTimeMillis()-tempoInicio<(tempoIntervalo-tempoExecucao));//Espera pelo tempo do frame. Está correto?
+        while(System.currentTimeMillis()-tempoInicio<(tempoIntervalo-tempoExecucao))wait(tempoIntervalo-tempoExecucao);//Espera pelo tempo do frame. Está correto?
         ClienteFrame.janela.repaint();//Atualiza a janela gráfica (pelo cliente).
         tempoFim=System.currentTimeMillis();
         tempoExecucao=tempoFim-tempoInicio;
-        if(tempoExecucao>tempoIntervalo*2)System.out.println("GERENTE_FPS: Frames atrasando! tempoExecucao: "+tempoExecucao+", tempoIntervalo: "+tempoIntervalo);
+        if(tempoExecucao>tempoIntervalo*2)System.out.println("GERENTE_FPS: Frames atrasado! tempoExecucao: "+tempoExecucao+", tempoIntervalo: "+tempoIntervalo);
       }
-    }catch(Exception e){
-      System.err.println("GERENE_FPS: erro");
-    }
+    }catch(IllegalArgumentException erro1){System.err.println("GERENE_FPS: IllegalArgumentException");}
+    catch(IllegalMonitorStateException erro2){System.err.println("GERENE_FPS: IllegalMonitorStateException");}
+    catch(InterruptedException  erro3){System.err.println("GERENE_FPS: InterruptedException");}
+    catch(Exception e){System.err.println("GERENE_FPS: Outro erro");}
   }
 }
 
