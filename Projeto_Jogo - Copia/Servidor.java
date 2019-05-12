@@ -48,13 +48,14 @@ class Servidor {
           }
           System.out.println("SERVIDOR: Accept slot "+i+" funcionou!");
           new Sala(clientSocket).start();
+          //clientCount++;//Mantem o clientCount atualizado dentro do 'for'. Porém, caso algum CLIENTE desconecte durante o loop, será necessário avisar o SERVIDOR pela SALA.
         }
         else clientCount++;
         if(clientCount>=MAXPLAYERS)salaCheia=true;
         try{
           if(salaCheia){
             System.out.println("SERVIDOR: Sala cheia!");
-            Thread.sleep(2000);//Espere de 2 segundos antes de checar se há vagas na sala. (Evita processamento desnecessário)
+            Thread.sleep(2000);//Espera de 2 segundos antes de checar se há vagas na sala. (Evita processamento desnecessário)
           }
           Thread.sleep(200);//Espera de 0.2 segundos. Evita que o Servidor tente ocupar a última vaga novamente (antes da SALA mudar seu estado para ocupado)
           System.out.println("SERVIDOR: Reiniciando loop de busca por clientes");

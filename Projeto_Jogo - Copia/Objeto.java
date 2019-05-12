@@ -37,11 +37,18 @@ class Player1 extends Objeto{
     public static int frame = 0;//O frame da animação do estado
     public static int direcao=1;
     public static int direcaoReajuste=0;
+    public static int acelVert=0;
 
     static int sdifX=8;//Diferença de posição do centro da hitBox com o centro do sprite
     static int sdifY=-19;
     static int sposX=0;//Inicializado no construtor
     static int sposY=0;
+
+    static boolean[] pathBlocked=new boolean[4];
+    static final int pathBlockedIndexDir=0;//DIREITA
+    static final int pathBlockedIndexCim=1;//CIMA
+    static final int pathBlockedIndexEsq=2;//ESQUERDA
+    static final int pathBlockedIndexBai=3;//BAIXO
 
     //BufferedImage[] ação = new BufferedImage[descritor[AÇÃO][NUM]];//os sprites cropados (frames) do estado
     BufferedImage[] anda = new BufferedImage[20];//Setar por número. Neste ponto da compilação a váriavel ainda não foi setada. (6 horas).
@@ -80,18 +87,25 @@ class Player1 extends Objeto{
     /********************************************************************************************************************************/
     //Define o estado (ação) do Objeto
     static void SetEstado(int set){
-        estado=set;
-        //System.out.println("SetEstado: estado="+estado);
+        if(acelVert>0)estado=PULA;
+        else if(!pathBlocked[pathBlockedIndexBai])estado=CAI;
+        else if(set==PULA){estado=PULA;acelVert=10;}
+        else estado=ANDA;
     }
 
     //Define a posição do objeto
     static void SetPosition(String mov){
-        if(mov.contains("a")){posX-=2;sposX-=2;}
-        else if(mov.contains("d")){posX+=2;sposX+=2;}
-        else if(mov.contains("s")){posY+=1;sposY+=1;}
-        else if(mov.contains("w")){posY-=1;sposY-=1;}
-        if(mov.contains(" ")){
-            //Pulo();
+        if(mov.contains("a") && !pathBlocked[pathBlockedIndexEsq]){posX-=2;sposX-=2;}
+        else if(mov.contains("d") && !pathBlocked[pathBlockedIndexDir]){posX+=2;sposX+=2;}
+        else if(mov.contains("s") && !pathBlocked[pathBlockedIndexBai]){posY+=1;sposY+=1;}
+        else if(mov.contains("w") && !pathBlocked[pathBlockedIndexCim]){posY-=1;sposY-=1;}
+        if(acelVert>0){
+            if(!pathBlocked[pathBlockedIndexCim]){posY-=acelVert/3;sposY-=acelVert/3;}
+            acelVert--;
+        }
+        else if(!pathBlocked[pathBlockedIndexBai]){
+            posY-=acelVert/3;sposY-=acelVert/3;
+            if(acelVert>-10)acelVert--;
         }
     }
 
@@ -104,8 +118,7 @@ class Player1 extends Objeto{
     //Atualmente atualiza o frame do objeto
     public void ExecutaAcao(String input){
         frame++;
-        if(HitBox().intersects(Player2.HitBox()))System.out.println("Player: Colidiu com P");
-        else System.out.println("Player: Colisao nao detectada");
+        Colisoes();
         if(input.contains("a")||input.contains("A")){
             SetEstado(ANDA);
             direcao=ESQ;
@@ -119,17 +132,34 @@ class Player1 extends Objeto{
             SetPosition("d");
         }
         else if(input.contains("w")||input.contains("W")){
-            SetPosition("w");
+            //SetPosition("w");
         }
         else if(input.contains("s")||input.contains("S")){
-            SetPosition("s");
+            //SetPosition("s");
         }
         if(input.contains(" ")){
             SetEstado(PULA);
+            SetPosition(" ");
         }
         if(frame>=descritor[estado][NUM])frame=0;
         else if(estadoAnterior!=estado)frame=0;
         estadoAnterior=estado;
+    }
+
+    void Colisoes(){
+        if(HitBox().intersects(Player2.HitBox())){
+            float relX=posX-Player2.posX;
+            float relY=posY-Player2.posY;
+            if(relX>sizeX*0.92)pathBlocked[pathBlockedIndexDir]=true;//players se trombando pela direita.
+            else pathBlocked[pathBlockedIndexDir]=false;
+            if(relX<-sizeX*0.92)pathBlocked[pathBlockedIndexEsq]=true;//players se trombando pela Esquerda.
+            else pathBlocked[pathBlockedIndexEsq]=false;
+            if(relY>sizeY*0.96)pathBlocked[pathBlockedIndexBai]=true;//players se trombando por baixo.
+            else pathBlocked[pathBlockedIndexBai]=false;
+            if(relY<sizeY*0.96)pathBlocked[pathBlockedIndexCim]=true;//players se trombando por cima.
+            else pathBlocked[pathBlockedIndexCim]=false;
+        }
+        if(HitBox().intersects(new Rectangle()));//checagem com cenario e items.
     }
 
     /********************************************************************************************************************************/
@@ -179,6 +209,12 @@ class Player2 extends Player1{
     static int sdifY=-12;
     static int sposX=0;//Inicializado no construtor
     static int sposY=0;
+
+    static boolean[] pathBlocked=new boolean[4];
+    static final int pathBlockedIndexDir=0;//DIREITA
+    static final int pathBlockedIndexCim=1;//CIMA
+    static final int pathBlockedIndexEsq=2;//ESQUERDA
+    static final int pathBlockedIndexBai=3;//BAIXO
     
     //BufferedImage[] ação = new BufferedImage[descritor[AÇÃO][NUM]];//os sprites cropados (frames) do estado
     BufferedImage[] anda = new BufferedImage[20];//Setar por número. Neste ponto da compilação a váriavel ainda não foi setada. (Essa linha me custou 6 horas).
@@ -217,18 +253,25 @@ class Player2 extends Player1{
     /********************************************************************************************************************************/
     //Define o estado (ação) do Objeto
     static void SetEstado(int set){
-        estado=set;
-        //System.out.println("SetEstado: estado="+estado);
+        if(acelVert>0)estado=PULA;
+        else if(!pathBlocked[pathBlockedIndexBai])estado=CAI;
+        else if(set==PULA){estado=PULA;acelVert=10;}
+        else estado=ANDA;
     }
 
     //Define a posição do objeto
     static void SetPosition(String mov){
-        if(mov.contains("a")){posX-=2;sposX-=2;}
-        else if(mov.contains("d")){posX+=2;sposX+=2;}
-        else if(mov.contains("s")){posY+=1;sposY+=1;}
-        else if(mov.contains("w")){posY-=1;sposY-=1;}
-        if(mov.contains(" ")){
-            //Pulo();
+        if(mov.contains("a") && !pathBlocked[pathBlockedIndexEsq]){posX-=2;sposX-=2;}
+        else if(mov.contains("d") && !pathBlocked[pathBlockedIndexDir]){posX+=2;sposX+=2;}
+        else if(mov.contains("s") && !pathBlocked[pathBlockedIndexBai]){posY+=1;sposY+=1;}
+        else if(mov.contains("w") && !pathBlocked[pathBlockedIndexCim]){posY-=1;sposY-=1;}
+        if(acelVert>0){
+            if(!pathBlocked[pathBlockedIndexCim]){posY-=acelVert/3;sposY-=acelVert/3;}
+            acelVert--;
+        }
+        else if(!pathBlocked[pathBlockedIndexBai]){
+            posY-=acelVert/3;sposY-=acelVert/3;
+            if(acelVert>-10)acelVert--;
         }
     }
 
@@ -241,8 +284,7 @@ class Player2 extends Player1{
     //Atualmente atualiza o frame do objeto
     public void ExecutaAcao(String input){
         frame++;
-        if(HitBox().intersects(Player1.HitBox()))System.out.println("Player: Colidiu com P");
-        else System.out.println("Player: Colisao nao detectada");
+        Colisoes();
         if(input.contains("a")||input.contains("A")){
             SetEstado(ANDA);
             direcao=ESQ;
@@ -256,17 +298,34 @@ class Player2 extends Player1{
             SetPosition("d");
         }
         else if(input.contains("w")||input.contains("W")){
-            SetPosition("w");
+            //SetPosition("w");
         }
         else if(input.contains("s")||input.contains("S")){
-            SetPosition("s");
+            //SetPosition("s");
         }
         if(input.contains(" ")){
             SetEstado(PULA);
+            SetPosition(" ");
         }
-        if(frame>=descritor[estado][NUM])frame=0;
+        if(frame>descritor[estado][NUM])frame=0;//mudança recente, era >=
         else if(estadoAnterior!=estado)frame=0;
         estadoAnterior=estado;
+    }
+
+    void Colisoes(){
+        if(HitBox().intersects(Player1.HitBox())){
+            float relX=posX-Player1.posX;
+            float relY=posY-Player1.posY;
+            if(relX>sizeX*0.92)pathBlocked[pathBlockedIndexDir]=true;//players se trombando pela direita.
+            else pathBlocked[pathBlockedIndexDir]=false;
+            if(relX<-sizeX*0.92)pathBlocked[pathBlockedIndexEsq]=true;//players se trombando pela Esquerda.
+            else pathBlocked[pathBlockedIndexEsq]=false;
+            if(relY>sizeY*0.96)pathBlocked[pathBlockedIndexBai]=true;//players se trombando por baixo.
+            else pathBlocked[pathBlockedIndexBai]=false;
+            if(relY<sizeY*0.96)pathBlocked[pathBlockedIndexCim]=true;//players se trombando por cima.
+            else pathBlocked[pathBlockedIndexCim]=false;
+        }
+        if(HitBox().intersects(new Rectangle()));//checagem com cenario e items.
     }
     /********************************************************************************************************************************/
     Player2(){
