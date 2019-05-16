@@ -114,16 +114,15 @@ class Sala extends Thread{
               os[i].flush();
             }
         }
-        //Solicitada desconexão por parte do cliente:
-        else if(inputLine.contains(ESC)){
-          os[slotNumber].println("");
+        else{//Solicitada desconexão por parte do cliente. (inputLine contém ESC)
+          os[slotNumber].println("::");
           os[slotNumber].flush();
           Servidor.LiberaSlot(slotNumber);
           cont--;
           os[slotNumber].close();
           clientSocket.close();//É vantajoso fechar o socket? Ele já foi fechado pela desconexão do cliente? Se não fechar, haverá resource leak?
         }
-      }while(!inputLine.equals(""));//CONTROLA O FIM DO LOOP DE IO COM OS CLIENTES. SAIR DESTE LOOP ENCERRA TODAS AS INTÂNCIAS DE SALA.
+      }while(!inputLine.equals(":::"));//CONTROLA O FIM DO LOOP DE IO COM OS CLIENTES. SAIR DESTE LOOP ENCERRA TODAS AS INTÂNCIAS DE SALA.
 
       //ENCERRANDO A CONEXAO
       System.out.println("SALA: Encerrando a sala");
