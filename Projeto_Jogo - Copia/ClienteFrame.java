@@ -7,7 +7,7 @@ import java.util.*;
 import javax.imageio.*;
 import java.awt.image.*;
 
-//Classes: ClienteFrame.
+//Classes: ClienteFrame, GerenteFPS.
 
 public class ClienteFrame extends JFrame implements Runnable, KeyListener{
   static PrintStream os = null;
@@ -25,13 +25,13 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener{
   BufferedImage[] p1anda = new BufferedImage[Player1.descritor[Player1.ANDA][Player1.NUM]];
   BufferedImage[] p1pula = new BufferedImage[Player1.descritor[Player1.PULA][Player1.NUM]];
   BufferedImage[] p1cai = new BufferedImage[Player1.descritor[Player1.CAI][Player1.NUM]];
-  BufferedImage[] p1stand = new BufferedImage[Player1.descritor[Player1.STAND][Player1.NUM]];
+  BufferedImage[] p1PARADO = new BufferedImage[Player1.descritor[Player1.PARADO][Player1.NUM]];
   //BufferedImage[] p1corre = new BufferedImage[Player1.descritor[Player1.CORRE][Player1.NUM]];
 
   BufferedImage[] p2anda = new BufferedImage[Player2.descritor[Player2.ANDA][Player2.NUM]];
   BufferedImage[] p2pula = new BufferedImage[Player2.descritor[Player2.PULA][Player2.NUM]];
   BufferedImage[] p2cai = new BufferedImage[Player2.descritor[Player2.CAI][Player2.NUM]];
-  BufferedImage[] p2stand = new BufferedImage[Player2.descritor[Player2.STAND][Player1.NUM]];
+  BufferedImage[] p2PARADO = new BufferedImage[Player2.descritor[Player2.PARADO][Player1.NUM]];
   //BufferedImage[] p2corre = new BufferedImage[Player2.descritor[Player2.CORRE][Player2.NUM]];
 
   BufferedImage[] imgCenario=new BufferedImage[2];
@@ -50,43 +50,43 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener{
         for(int row=0;row<Player1.descritor[Player1.ANDA][Player1.ROWS];row++)
           for(int col=0;col<Player1.descritor[Player1.ANDA][Player1.COLS];col++)
             if((row*(Player1.descritor[Player1.ANDA][Player1.COLS])+col)<Player1.descritor[Player1.ANDA][Player1.NUM])//Checa se a sprite-sheet é totalmente preenchida
-              p1anda[row*(Player1.descritor[Player1.ANDA][Player1.COLS])+col]=ImageIO.read(new File("P1_Anda1.png")).getSubimage(col*Player1.descritor[Player1.ANDA][Player1.WIDTH2],row*Player1.descritor[Player1.ANDA][Player1.HEIGHT2],Player1.descritor[Player1.ANDA][Player1.WIDTH2],Player1.descritor[Player1.ANDA][Player1.HEIGHT2]);
+              p1anda[row*(Player1.descritor[Player1.ANDA][Player1.COLS])+col]=ImageIO.read(new File("P1_Anda1.png")).getSubimage(col*Player1.descritor[Player1.ANDA][Player1.LARGURA],row*Player1.descritor[Player1.ANDA][Player1.ALTURA],Player1.descritor[Player1.ANDA][Player1.LARGURA],Player1.descritor[Player1.ANDA][Player1.ALTURA]);
 
         for(int row=0;row<Player1.descritor[Player1.PULA][Player1.ROWS];row++)
           for(int col=0;col<Player1.descritor[Player1.PULA][Player1.COLS];col++)
             if((row*(Player1.descritor[Player1.PULA][Player1.COLS])+col)<Player1.descritor[Player1.PULA][Player1.NUM])//Checa se a sprite-sheet é totalmente preenchida
-              p1pula[row*(Player1.descritor[Player1.PULA][Player1.COLS])+col]=ImageIO.read(new File("P1_Pula.png")).getSubimage(col*Player1.descritor[Player1.PULA][Player1.WIDTH2],row*Player1.descritor[Player1.PULA][Player1.HEIGHT2],Player1.descritor[Player1.PULA][Player1.WIDTH2],Player1.descritor[Player1.PULA][Player1.HEIGHT2]);
+              p1pula[row*(Player1.descritor[Player1.PULA][Player1.COLS])+col]=ImageIO.read(new File("P1_Pula.png")).getSubimage(col*Player1.descritor[Player1.PULA][Player1.LARGURA],row*Player1.descritor[Player1.PULA][Player1.ALTURA],Player1.descritor[Player1.PULA][Player1.LARGURA],Player1.descritor[Player1.PULA][Player1.ALTURA]);
 
         for(int row=0;row<Player1.descritor[Player1.CAI][Player1.ROWS];row++)
           for(int col=0;col<Player1.descritor[Player1.CAI][Player1.COLS];col++)
             if((row*(Player1.descritor[Player1.CAI][Player1.COLS])+col)<Player1.descritor[Player1.CAI][Player1.NUM])//Checa se a sprite-sheet é totalmente preenchida
-              p1cai[row*(Player1.descritor[Player1.CAI][Player1.COLS])+col]=ImageIO.read(new File("P1_Cai.png")).getSubimage(col*Player1.descritor[Player1.CAI][Player1.WIDTH2],row*Player1.descritor[Player1.CAI][Player1.HEIGHT2],Player1.descritor[Player1.CAI][Player1.WIDTH2],Player1.descritor[Player1.CAI][Player1.HEIGHT2]);
+              p1cai[row*(Player1.descritor[Player1.CAI][Player1.COLS])+col]=ImageIO.read(new File("P1_Cai.png")).getSubimage(col*Player1.descritor[Player1.CAI][Player1.LARGURA],row*Player1.descritor[Player1.CAI][Player1.ALTURA],Player1.descritor[Player1.CAI][Player1.LARGURA],Player1.descritor[Player1.CAI][Player1.ALTURA]);
              
-        for(int row=0;row<Player1.descritor[Player1.STAND][Player1.ROWS];row++)
-          for(int col=0;col<Player1.descritor[Player1.STAND][Player1.COLS];col++)
-            if((row*(Player1.descritor[Player1.STAND][Player1.COLS])+col)<Player1.descritor[Player1.STAND][Player1.NUM])//Checa se a sprite-sheet é totalmente preenchida
-              p1stand[row*(Player1.descritor[Player1.STAND][Player1.COLS])+col]=ImageIO.read(new File("P1_Stand.png")).getSubimage(col*Player1.descritor[Player1.STAND][Player1.WIDTH2],row*Player1.descritor[Player1.STAND][Player1.HEIGHT2],Player1.descritor[Player1.STAND][Player1.WIDTH2],Player1.descritor[Player1.STAND][Player1.HEIGHT2]);    
+        for(int row=0;row<Player1.descritor[Player1.PARADO][Player1.ROWS];row++)
+          for(int col=0;col<Player1.descritor[Player1.PARADO][Player1.COLS];col++)
+            if((row*(Player1.descritor[Player1.PARADO][Player1.COLS])+col)<Player1.descritor[Player1.PARADO][Player1.NUM])//Checa se a sprite-sheet é totalmente preenchida
+              p1PARADO[row*(Player1.descritor[Player1.PARADO][Player1.COLS])+col]=ImageIO.read(new File("P1_Parado.png")).getSubimage(col*Player1.descritor[Player1.PARADO][Player1.LARGURA],row*Player1.descritor[Player1.PARADO][Player1.ALTURA],Player1.descritor[Player1.PARADO][Player1.LARGURA],Player1.descritor[Player1.PARADO][Player1.ALTURA]);    
 
         //P2
         for(int row=0;row<Player2.descritor[Player2.ANDA][Player2.ROWS];row++)
           for(int col=0;col<Player2.descritor[Player2.ANDA][Player2.COLS];col++)
             if((row*(Player2.descritor[Player2.ANDA][Player2.COLS])+col)<Player2.descritor[Player2.ANDA][Player2.NUM])//Checa se a sprite-sheet é totalmente preenchida
-              p2anda[row*(Player2.descritor[Player2.ANDA][Player2.COLS])+col]=ImageIO.read(new File("P2_Anda1.png")).getSubimage(col*Player2.descritor[Player2.ANDA][Player2.WIDTH2],row*Player2.descritor[Player2.ANDA][Player2.HEIGHT2],Player2.descritor[Player2.ANDA][Player2.WIDTH2],Player2.descritor[Player2.ANDA][Player2.HEIGHT2]);
+              p2anda[row*(Player2.descritor[Player2.ANDA][Player2.COLS])+col]=ImageIO.read(new File("P2_Anda1.png")).getSubimage(col*Player2.descritor[Player2.ANDA][Player2.LARGURA],row*Player2.descritor[Player2.ANDA][Player2.ALTURA],Player2.descritor[Player2.ANDA][Player2.LARGURA],Player2.descritor[Player2.ANDA][Player2.ALTURA]);
 
         for(int row=0;row<Player2.descritor[Player2.PULA][Player2.ROWS];row++)
           for(int col=0;col<Player2.descritor[Player2.PULA][Player2.COLS];col++)
             if((row*(Player2.descritor[Player2.PULA][Player2.COLS])+col)<Player2.descritor[Player2.PULA][Player2.NUM])//Checa se a sprite-sheet é totalmente preenchida
-              p2pula[row*(Player2.descritor[Player2.PULA][Player2.COLS])+col]=ImageIO.read(new File("P2_Pula.png")).getSubimage(col*Player2.descritor[Player2.PULA][Player2.WIDTH2],row*Player2.descritor[Player2.PULA][Player2.HEIGHT2],Player2.descritor[Player2.PULA][Player2.WIDTH2],Player2.descritor[Player2.PULA][Player2.HEIGHT2]);
+              p2pula[row*(Player2.descritor[Player2.PULA][Player2.COLS])+col]=ImageIO.read(new File("P2_Pula.png")).getSubimage(col*Player2.descritor[Player2.PULA][Player2.LARGURA],row*Player2.descritor[Player2.PULA][Player2.ALTURA],Player2.descritor[Player2.PULA][Player2.LARGURA],Player2.descritor[Player2.PULA][Player2.ALTURA]);
 
         for(int row=0;row<Player2.descritor[Player2.CAI][Player2.ROWS];row++)
           for(int col=0;col<Player2.descritor[Player2.CAI][Player2.COLS];col++)
             if((row*(Player2.descritor[Player2.CAI][Player2.COLS])+col)<Player2.descritor[Player2.CAI][Player2.NUM])//Checa se a sprite-sheet é totalmente preenchida
-              p2cai[row*(Player2.descritor[Player2.CAI][Player2.COLS])+col]=ImageIO.read(new File("P2_Cai.png")).getSubimage(col*Player2.descritor[Player2.CAI][Player2.WIDTH2],row*Player2.descritor[Player2.CAI][Player2.HEIGHT2],Player2.descritor[Player2.CAI][Player2.WIDTH2],Player2.descritor[Player2.CAI][Player2.HEIGHT2]);
+              p2cai[row*(Player2.descritor[Player2.CAI][Player2.COLS])+col]=ImageIO.read(new File("P2_Cai.png")).getSubimage(col*Player2.descritor[Player2.CAI][Player2.LARGURA],row*Player2.descritor[Player2.CAI][Player2.ALTURA],Player2.descritor[Player2.CAI][Player2.LARGURA],Player2.descritor[Player2.CAI][Player2.ALTURA]);
              
-        for(int row=0;row<Player2.descritor[Player2.STAND][Player2.ROWS];row++)
-          for(int col=0;col<Player2.descritor[Player2.STAND][Player2.COLS];col++)
-            if((row*(Player2.descritor[Player2.STAND][Player2.COLS])+col)<Player2.descritor[Player2.STAND][Player2.NUM])//Checa se a sprite-sheet é totalmente preenchida
-              p2stand[row*(Player2.descritor[Player2.STAND][Player2.COLS])+col]=ImageIO.read(new File("P2_Stand.png")).getSubimage(col*Player2.descritor[Player2.STAND][Player2.WIDTH2],row*Player2.descritor[Player2.STAND][Player2.HEIGHT2],Player2.descritor[Player2.STAND][Player2.WIDTH2],Player2.descritor[Player2.STAND][Player2.HEIGHT2]);
+        for(int row=0;row<Player2.descritor[Player2.PARADO][Player2.ROWS];row++)
+          for(int col=0;col<Player2.descritor[Player2.PARADO][Player2.COLS];col++)
+            if((row*(Player2.descritor[Player2.PARADO][Player2.COLS])+col)<Player2.descritor[Player2.PARADO][Player2.NUM])//Checa se a sprite-sheet é totalmente preenchida
+              p2PARADO[row*(Player2.descritor[Player2.PARADO][Player2.COLS])+col]=ImageIO.read(new File("P2_Parado.png")).getSubimage(col*Player2.descritor[Player2.PARADO][Player2.LARGURA],row*Player2.descritor[Player2.PARADO][Player2.ALTURA],Player2.descritor[Player2.PARADO][Player2.LARGURA],Player2.descritor[Player2.PARADO][Player2.ALTURA]);
 
       }catch(IOException e){
         JOptionPane.showMessageDialog(this,"A imagem nao pode ser carregada!\n"+e,"Erro",JOptionPane.ERROR_MESSAGE);
@@ -100,17 +100,21 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener{
       g.drawImage(imgCenario[fundo], 0, 0, getSize().width, getSize().height, this);
       g.drawRect(Player1.HitBox().x,Player1.HitBox().y,Player1.HitBox().width,Player1.HitBox().height);
       g.drawRect(Player2.HitBox().x,Player2.HitBox().y,Player2.HitBox().width,Player2.HitBox().height);
+      ////////////////////
+      //Atualmente Cenario tem hitbox estática. Será necessário instânciar cada unidade do cenário, ou é possivel armazenar tudo de forma estática?
+      g.drawRect(Cenario.HitBox().x,Cenario.HitBox().y,Cenario.HitBox().width,Cenario.HitBox().height);
+      ///////////////////
       switch(Player1.estado){
-        case Player1.ANDA:g.drawImage(p1anda[Player1.frame], Player1.sposX+Player1.direcaoReajuste, Player1.sposY, Player1.direcao*Player1.descritor[Player1.estado][Player1.WIDTH2],Player1.descritor[Player1.estado][Player1.HEIGHT2],this);break;
-        case Player1.PULA:g.drawImage(p1pula[Player1.frame], Player1.sposX+Player1.direcaoReajuste, Player1.sposY, Player1.direcao*Player1.descritor[Player1.estado][Player1.WIDTH2],Player1.descritor[Player1.estado][Player1.HEIGHT2],this);break;
-        case Player1.CAI:g.drawImage(p1cai[Player1.frame], Player1.sposX+Player1.direcaoReajuste, Player1.sposY, Player1.direcao*Player1.descritor[Player1.estado][Player1.WIDTH2],Player1.descritor[Player1.estado][Player1.HEIGHT2],this);break;
-        case Player1.STAND:g.drawImage(p1stand[Player1.frame], Player1.sposX+Player1.direcaoReajuste, Player1.sposY, Player1.direcao*Player1.descritor[Player1.estado][Player1.WIDTH2],Player1.descritor[Player1.estado][Player1.HEIGHT2],this);break;
+        case Player1.ANDA:g.drawImage(p1anda[Player1.frame], Player1.sposX+Player1.direcaoReajuste, Player1.sposY, Player1.direcao*Player1.descritor[Player1.estado][Player1.LARGURA],Player1.descritor[Player1.estado][Player1.ALTURA],this);break;
+        case Player1.PULA:g.drawImage(p1pula[Player1.frame], Player1.sposX+Player1.direcaoReajuste, Player1.sposY, Player1.direcao*Player1.descritor[Player1.estado][Player1.LARGURA],Player1.descritor[Player1.estado][Player1.ALTURA],this);break;
+        case Player1.CAI:g.drawImage(p1cai[Player1.frame], Player1.sposX+Player1.direcaoReajuste, Player1.sposY, Player1.direcao*Player1.descritor[Player1.estado][Player1.LARGURA],Player1.descritor[Player1.estado][Player1.ALTURA],this);break;
+        case Player1.PARADO:g.drawImage(p1PARADO[Player1.frame], Player1.sposX+Player1.direcaoReajuste, Player1.sposY, Player1.direcao*Player1.descritor[Player1.estado][Player1.LARGURA],Player1.descritor[Player1.estado][Player1.ALTURA],this);break;
       }
       switch(Player2.estado){
-        case Player2.ANDA:g.drawImage(p2anda[Player2.frame], Player2.sposX+Player2.direcaoReajuste, Player2.sposY, Player2.direcao*Player2.descritor[Player2.estado][Player2.WIDTH2],Player2.descritor[Player2.estado][Player2.HEIGHT2],this);break;
-        case Player2.PULA:g.drawImage(p2pula[Player2.frame], Player2.sposX+Player2.direcaoReajuste, Player2.sposY, Player2.direcao*Player2.descritor[Player2.estado][Player2.WIDTH2],Player2.descritor[Player2.estado][Player2.HEIGHT2],this);break;
-        case Player2.CAI:g.drawImage(p2cai[Player2.frame], Player2.sposX+Player2.direcaoReajuste, Player2.sposY, Player2.direcao*Player2.descritor[Player2.estado][Player2.WIDTH2],Player2.descritor[Player2.estado][Player2.HEIGHT2],this);break;
-        case Player2.STAND:g.drawImage(p2stand[Player2.frame], Player2.sposX+Player2.direcaoReajuste, Player2.sposY, Player2.direcao*Player2.descritor[Player2.estado][Player2.WIDTH2],Player2.descritor[Player2.estado][Player2.HEIGHT2],this);break;
+        case Player2.ANDA:g.drawImage(p2anda[Player2.frame], Player2.sposX+Player2.direcaoReajuste, Player2.sposY, Player2.direcao*Player2.descritor[Player2.estado][Player2.LARGURA],Player2.descritor[Player2.estado][Player2.ALTURA],this);break;
+        case Player2.PULA:g.drawImage(p2pula[Player2.frame], Player2.sposX+Player2.direcaoReajuste, Player2.sposY, Player2.direcao*Player2.descritor[Player2.estado][Player2.LARGURA],Player2.descritor[Player2.estado][Player2.ALTURA],this);break;
+        case Player2.CAI:g.drawImage(p2cai[Player2.frame], Player2.sposX+Player2.direcaoReajuste, Player2.sposY, Player2.direcao*Player2.descritor[Player2.estado][Player2.LARGURA],Player2.descritor[Player2.estado][Player2.ALTURA],this);break;
+        case Player2.PARADO:g.drawImage(p2PARADO[Player2.frame], Player2.sposX+Player2.direcaoReajuste, Player2.sposY, Player2.direcao*Player2.descritor[Player2.estado][Player2.LARGURA],Player2.descritor[Player2.estado][Player2.ALTURA],this);break;
       }
       Toolkit.getDefaultToolkit().sync();
     }
