@@ -4,7 +4,7 @@ import java.util.*;
 
 //Classes: Servidor, Sala.
 /*
-Sobre o servidor: o servidor gerencia a conexao de maxPlayers clientes com a sala, 
+Sobre o servidor: o servidor gerencia a conexao dos clientes com a sala, 
 reconhecendo a desconexão de um cliente específico e liberando a respectiva vaga.
 Caso a sala fique cheia, o servidor entra em loop de 2s, checando pela liberação de uma vaga.
 Os clientes checam se há vagas antes de solicitar a conexão.
@@ -12,11 +12,12 @@ Os clientes checam se há vagas antes de solicitar a conexão.
 
 //O SERVIDOR
 class Servidor {
-  final static int MAXPLAYERS=2;
-  static boolean salaCheia=false;
-  static boolean fecharSala=false;//O nome correto seria "fecharInstanciaDoServidor"?
-  static boolean[] slot=new boolean[MAXPLAYERS];
+  final static int MAXPLAYERS=2;//Número de Players permitido na Sala
+  static boolean salaCheia=false;//Controle do limite de players da Sala
+  static boolean fecharSala=false;//Controle de encerramento do servidor. O nome correto seria "fecharInstanciaDoServidor"?
+  static boolean[] slot=new boolean[MAXPLAYERS];//Controle de status de cada slot de Player da Sala
 
+  //Ocupa ou desocupa o slot do Cliente
   static void OcupaSlot(int slotNumber){
     slot[slotNumber]=true;
   }
@@ -48,7 +49,6 @@ class Servidor {
           }
           System.out.println("SERVIDOR: Accept slot "+i+" funcionou!");
           new Sala(clientSocket).start();
-          //clientCount++;//Mantem o clientCount atualizado dentro do 'for'. Porém, caso algum CLIENTE desconecte durante o loop, será necessário avisar o SERVIDOR pela SALA.
         }
         else clientCount++;
         if(clientCount>=MAXPLAYERS)salaCheia=true;

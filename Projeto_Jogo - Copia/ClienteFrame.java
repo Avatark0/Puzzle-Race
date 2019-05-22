@@ -10,30 +10,30 @@ import java.awt.image.*;
 //Classes: ClienteFrame, GerenteFPS.
 
 public class ClienteFrame extends JFrame implements Runnable, KeyListener{
+  //I/O
   static PrintStream os = null;
-
+  public static long inputCount=0;
+  public static String inputLine;
+  public static String outputString="0:1:";
+  //Janela do jogo
   static JPanel janela;
   //CLASSES(OBJETOS DO JOGO)
   int fundo=0;
   Player1 player1=new Player1();
   Player2 player2=new Player2();
-
-  public static int inputCount=0;
-  public static String inputLine;
-  public static String outputString="0:1:";
-  
+  //SpriteSheets de Player1
   BufferedImage[] p1anda = new BufferedImage[Player1.descritor[Player1.ANDA][Player1.NUM]];
   BufferedImage[] p1pula = new BufferedImage[Player1.descritor[Player1.PULA][Player1.NUM]];
   BufferedImage[] p1cai = new BufferedImage[Player1.descritor[Player1.CAI][Player1.NUM]];
   BufferedImage[] p1PARADO = new BufferedImage[Player1.descritor[Player1.PARADO][Player1.NUM]];
   //BufferedImage[] p1corre = new BufferedImage[Player1.descritor[Player1.CORRE][Player1.NUM]];
-
+  //SpriteSheets de Player2
   BufferedImage[] p2anda = new BufferedImage[Player2.descritor[Player2.ANDA][Player2.NUM]];
   BufferedImage[] p2pula = new BufferedImage[Player2.descritor[Player2.PULA][Player2.NUM]];
   BufferedImage[] p2cai = new BufferedImage[Player2.descritor[Player2.CAI][Player2.NUM]];
   BufferedImage[] p2PARADO = new BufferedImage[Player2.descritor[Player2.PARADO][Player1.NUM]];
   //BufferedImage[] p2corre = new BufferedImage[Player2.descritor[Player2.CORRE][Player2.NUM]];
-
+  //Sprites dos demais objetos
   BufferedImage[] imgCenario=new BufferedImage[2];
   Image[] imgItens=new Image[2];
   
@@ -131,13 +131,14 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener{
     addKeyListener(this);
   }
 
+  //Utilizado pelo Gerente_FPS para resetar a outputString a cada frame
   public static void resetaOutputString(){
     //System.out.println("CLIENTE: resetando outputString:"+outputString);
     outputString="0:1:";
   }
 
   //EVENTOS DO CLIENTE (os inputs do jogador)
-  public synchronized void keyPressed(KeyEvent e){//Como reconhecer imputs compostos? (pulo+a, shif+a, etc) eles são recebidos separadamente. Como lidar com o shift?
+  public synchronized void keyPressed(KeyEvent e){//Como reconhecer imputs compostos? (pulo+a, shif+a, etc) eles são recebidos separadamente. Como lidar com o shift? - pressed e released.
     char key=e.getKeyChar();
     os.println(key);
   }
@@ -150,6 +151,7 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener{
     new Thread(new GerenteFPS()).start();
   }
 
+  //Faz a conexão e comunicação com o servidor
   public void run(){
     Socket socket=null;
     Scanner is=null;
@@ -173,10 +175,11 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener{
       Player1[] playerArray=new Player1[maxPlayers];
       playerArray[0]=new Player1();
       playerArray[1]=new Player2();
-      //INPUTS DO SERVIDOR - AQUI AS AÇOES SAO RECEBIDAS
+      //INPUTS DO SERVIDOR - AQUI AS AÇÕES SÃO RECEBIDAS
       do {
-        inputLine=is.nextLine();//O input recebido
-        inputCount++;
+        inputLine=is.nextLine();//O input recebido pelo servidor
+        inputCount++;//Atualiza a contagem de inputs
+        //Concatena o input na outputString (no trecho do jogador que executou o input)
         String input=inputLine.substring(2);
         if(inputLine.contains("0:")){
           String ini=outputString.substring(0, outputString.indexOf("1:"));
@@ -187,7 +190,7 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener{
         else if(inputLine.contains("1:")){
           outputString=outputString.concat(input);
         }
-      }while(!inputLine.equals("::"));
+      }while(!inputLine.equals("::"));//Comando de encerramento da conexão pelo cliente
       //CONEXÃO ENCERRADA
       os.close();
       is.close();
@@ -202,8 +205,9 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener{
   }
 }
 
-//GERENTE_FPS: Controla a taxa de redesenho da Janela.
+//GERENTE_FPS: Controla a taxa de redesenho da Janela e a aplicação da outputString a cada frame
 class GerenteFPS extends TimerTask{
+  //Controles de tempo de cada frame
   static long tempoInicio;
   static long tempoFim=0;
   static long tempoExecucao=0;
@@ -211,33 +215,39 @@ class GerenteFPS extends TimerTask{
 
   public synchronized void run(){
   int maxPlayers=Sala.MAXPLAYERS;
-  Player1[] playerArray=new Player1[maxPlayers];
+  Player1[] playerArray=new Player1[maxPlayers];//Array de jogadores. Cada jogador pussui uma classe própria, todos extendidos de Player1
   playerArray[0]=new Player1();
   playerArray[1]=new Player2();
+  //Strings dos inputs
   String outputString;
   String p0;
   String p1;
-  int inputCount=0;
+  long inputCount=0;//Recebe a contagem de inputs do Cliente
     try{
+      //Loop de cada frame
       while(!Servidor.fecharSala){
-        tempoInicio=System.currentTimeMillis();
-        while(System.currentTimeMillis()-tempoInicio<(tempoIntervalo-tempoExecucao))wait(tempoIntervalo-tempoExecucao);//Espera pelo tempo do frame. Está correto?
-        if(inputCount!=ClienteFrame.inputCount){
-          inputCount=ClienteFrame.inputCount;
-          outputString=ClienteFrame.outputString;
-          ClienteFrame.resetaOutputString();
+        tempoInicio=System.currentTimeMillis();//Marca o tempo de inicio do frame
+        while(System.currentTimeMillis()-tempoInicio<(tempoIntervalo-tempoExecucao))wait(tempoIntervalo-tempoExecucao);//Espera pelo tempo do frame. Está correto? - funcina corretamente...
+        if(inputCount!=ClienteFrame.inputCount){//Checa se a última outputString já foi computada
+          inputCount=ClienteFrame.inputCount;//Caso não tenha sido, atualiza a contagem 
+          outputString=ClienteFrame.outputString;//Computa a outputString
+          ClienteFrame.resetaOutputString();//Reseta a outputString para o próximo frame
         }
-        else{
+        else{//Caso a última outputString já tenha sido computada, reseta seu valor local (sem alterar a contagem, apenas o cliente altera a contagem com inputs novos)
           outputString="0:1:";
         }
+        //Extrai os inputs individuais para cada Player
         p0=outputString.substring(outputString.indexOf("0:")+2, outputString.indexOf("1:"));
         p1=outputString.substring(outputString.indexOf("1:")+2);
+        //Executa as ações dos inputs e do frame de cada Player
         playerArray[0].ExecutaAcao(p0);
         playerArray[1].ExecutaAcao(p1);
-        ClienteFrame.janela.repaint();//Atualiza a janela gráfica (pelo cliente).
-        tempoFim=System.currentTimeMillis();
-        tempoExecucao=tempoFim-tempoInicio;
-        if(tempoExecucao>tempoIntervalo*2)System.out.println("GERENTE_FPS: Frames atrasado! tempoExecucao: "+tempoExecucao+", tempoIntervalo: "+tempoIntervalo);
+        //Atualiza a janela gráfica (pelo cliente).
+        ClienteFrame.janela.repaint();
+        //Controla o encerramento do frame
+        tempoFim=System.currentTimeMillis();//Registra o tempo de encerramento do frame
+        tempoExecucao=tempoFim-tempoInicio;//Calcula o tempo de execução deste frame
+        if(tempoExecucao>tempoIntervalo*2)System.out.println("GERENTE_FPS: Frames atrasado! tempoExecucao: "+tempoExecucao+", tempoIntervalo: "+tempoIntervalo);//Notifica caso frame tenha levado mais tempo que o esperado
       }
     }catch(IllegalArgumentException erro1){System.err.println("GERENE_FPS: IllegalArgumentException");}
     catch(IllegalMonitorStateException erro2){System.err.println("GERENE_FPS: IllegalMonitorStateException");}
