@@ -21,6 +21,9 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener{
   int fundo=0;
   Player1 player1=new Player1();
   Player2 player2=new Player2();
+  //Cenário (em construção)
+  public static int blocosNum=6;//Número de blocos do cenário
+  public static Cenario[] cenario=new Cenario[blocosNum];//Vetor de blocos do cenário
   //SpriteSheets de Player1
   BufferedImage[] p1anda = new BufferedImage[Player1.descritor[Player1.ANDA][Player1.NUM]];
   BufferedImage[] p1pula = new BufferedImage[Player1.descritor[Player1.PULA][Player1.NUM]];
@@ -42,7 +45,7 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener{
     //Determina propriedades da janela e carrega os sprites.
     Janela(){
       try{
-        setPreferredSize(new Dimension(300, 300));
+        setPreferredSize(new Dimension(800, 600));
         imgCenario[0]=ImageIO.read(new File("fundo.jpeg"));
         imgCenario[1]=ImageIO.read(new File("fundo2.jpeg"));
         
@@ -102,7 +105,9 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener{
       g.drawRect(Player2.HitBox().x,Player2.HitBox().y,Player2.HitBox().width,Player2.HitBox().height);
       ////////////////////
       //Atualmente Cenario tem hitbox estática. Será necessário instânciar cada unidade do cenário, ou é possivel armazenar tudo de forma estática?
-      g.drawRect(Cenario.HitBox().x,Cenario.HitBox().y,Cenario.HitBox().width,Cenario.HitBox().height);
+      for(int i=0; i<blocosNum; i++){
+        g.drawRect(cenario[i].HitBox().x,cenario[i].HitBox().y,cenario[i].HitBox().width,cenario[i].HitBox().height);
+      }
       ///////////////////
       switch(Player1.estado){
         case Player1.ANDA:g.drawImage(p1anda[Player1.frame], Player1.sposX+Player1.direcaoReajuste, Player1.sposY, Player1.direcao*Player1.descritor[Player1.estado][Player1.LARGURA],Player1.descritor[Player1.estado][Player1.ALTURA],this);break;
@@ -124,7 +129,7 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener{
   ClienteFrame(){
     super("Cliente do chat");
     janela=new Janela();//instancia a janela gráfica do jogo
-    setPreferredSize(new Dimension(300,300));//PreferredSize é chamado duas vezes (aqui e em Janela()). É necessário?
+    setPreferredSize(new Dimension(800,600));//PreferredSize é chamado duas vezes (aqui e em Janela()). Onde é melhor?
     add(janela,BorderLayout.CENTER);
     pack();
     setVisible(true);
@@ -135,6 +140,13 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener{
   public static void resetaOutputString(){
     //System.out.println("CLIENTE: resetando outputString:"+outputString);
     outputString="0:1:";
+  }
+
+  //Em construção
+  static void ConstroiCenario(){
+    for(int i=0; i<blocosNum; i++){
+      cenario[i]=new Cenario(i);
+    }
   }
 
   //EVENTOS DO CLIENTE (os inputs do jogador)
@@ -149,6 +161,7 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener{
   public static void main(String[] args){
     new Thread(new ClienteFrame()).start();
     new Thread(new GerenteFPS()).start();
+    ConstroiCenario();
   }
 
   //Faz a conexão e comunicação com o servidor

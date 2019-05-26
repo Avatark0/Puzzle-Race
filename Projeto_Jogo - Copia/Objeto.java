@@ -36,13 +36,25 @@ class Cenario extends Objeto{
     static int sposY=0;
 
     //Variáveis de controle do Cenario
-    public static int posX = 80;//Posição da hitBox (0,0 = canto esquerdo superior)
-    public static int posY = 80;
-    public static int sizeX = 50;//Tamanho do Objeto
-    public static int sizeY = 50;
+    public int posX=0;//Posição da hitBox (0,0 = canto esquerdo superior)
+    public int posY=0;
+    public int sizeX=100;//Tamanho do Objeto
+    public int sizeY=100;
     
+    //Construtor
+    Cenario(int tipo){
+        switch(tipo){
+            case 0:posX=  0;posY=150; break;
+            case 1:posX=100;posY=150; break;
+            case 2:posX=200;posY=250; break;
+            case 3:posX=300;posY=150; break;
+            case 4:posX=100;posY=250; break;
+            case 5:posX=300;posY=250; break;
+        }
+    }
+
     //Retorna um retângulo com a hitBox do Objeto
-    static Rectangle HitBox(){
+    Rectangle HitBox(){
         Rectangle hitBox=new Rectangle(posX,posY,sizeX,sizeY);
         return hitBox;
     }
@@ -83,21 +95,20 @@ class Player1 extends Objeto{
     public static int acelVert=0;//Controle da aceleração vertical do Player1. (Atualmente alterada apenas pelo estado PULA)
 
     /********************************************************************************************************************************/
-    //Define o estado (ação) do Objeto
-    static void SetEstado(int set){
-        if(acelVert>0)estado=PULA;
-        else if(!pathBlocked[pathBlockedIndexBai])estado=CAI;
-        else if(set==PULA){estado=PULA;acelVert=10;}
-        else if(set==ANDA)estado=ANDA;
-        else estado=PARADO;
+    //Executa as ações de cada frame, aplicando os inputs e colisões. Também atualiza o frame e estado do Objeto
+    public void ExecutaAcao(String input){
+        Colisoes();//Checagem de colisões. Detecta quais direções estão bloqueadas
+        ChecaOciosidade(input);
+        SetEstado(input);
+        SetFrame();
+        SetPosition(input);
     }
-
     //Define a posição do Objeto
-    static void SetPosition(String mov){
+    void SetPosition(String mov){
         if((mov.contains("a")||mov.contains("A")) && !pathBlocked[pathBlockedIndexEsq]){posX-=2;sposX-=2;}
-        else if((mov.contains("d")||mov.contains("D")) && !pathBlocked[pathBlockedIndexDir]){posX+=2;sposX+=2;}
-        else if(mov.contains("s")||mov.contains("S")){posY+=1;sposY+=1;}
-        else if(mov.contains("w")||mov.contains("W")){posY-=1;sposY-=1;}
+        if((mov.contains("d")||mov.contains("D")) && !pathBlocked[pathBlockedIndexDir]){posX+=2;sposX+=2;}
+        if(mov.contains("s")||mov.contains("S")){posY+=1;sposY+=1;}
+        if(mov.contains("w")||mov.contains("W")){posY-=1;sposY-=1;}
         if(acelVert>0){
             if(!pathBlocked[pathBlockedIndexCim]){posY-=acelVert/3;sposY-=acelVert/3;}
             acelVert--;
@@ -107,51 +118,51 @@ class Player1 extends Objeto{
             if(acelVert>-10)acelVert--;
         }
     }
-
-    //Executa as ações de cada frame, aplicando os inputs e colisões. Também atualiza o frame do Objeto e determina seu estado
-    public void ExecutaAcao(String input){
-        Colisoes();
-
-        if(input.contains("a")||input.contains("A")){
-            SetEstado(ANDA);
-            direcao=ESQ;
-            direcaoReajuste=0;
-            framePARADOIntervalCount=0;
-        }
-        else if(input.contains("d")||input.contains("D")){
-            SetEstado(ANDA);
-            direcao=DIR;
-            direcaoReajuste=descritor[ANDA][LARGURA]-sdifX*2;
-            framePARADOIntervalCount=0;
-        }
-        else if(input.contains("w")||input.contains("W")){}
-        else if(input.contains("s")||input.contains("S")){}
-        else if(framePARADOIntervalCount>=10){SetEstado(PARADO);framePARADOIntervalCount=0;}
-        else framePARADOIntervalCount++;
-        if(input.contains(" ")){
-            SetEstado(PULA);
-        }
-        if(estadoAnterior!=estado&&frame%(descritor[estado][NUM]/3)==0)frame=0;
-        else if(frame==descritor[estado][NUM]-1&&(estado==CAI||estado==PULA));//mantém o sprite no último frame da animação
-        else if(frame>=descritor[estado][NUM]-1)frame=0;
-        else frame++;
-        estadoAnterior=estado;
-        SetPosition(input);
+    void SetFrame(){
+        //if(estadoAnterior!=estado&&frame%(descritor[estado][NUM]/3)==0)frame=0;
+        if(estadoAnterior!=estado)frame=0;
+        else if(frame==descritor[estado][NUM]-1&&(estado==CAI||estado==PULA));//Mantém o sprite no último frame da animação
+        else if(frame>=descritor[estado][NUM]-1)frame=0;//Reseta o sprite da animação
+        else frame++;//Avança o sprite da animação
     }
-
+    //Define o estado (ação) do Objeto
+    void SetEstado(String input){
+        estadoAnterior=estado;//Registra o estado anterior, antes do input atual. (Usado em SetFrame)
+        if(acelVert>0)estado=PULA;//Caso esteja com aceleração vertical positiva, o estado é PULA
+        else if(!pathBlocked[pathBlockedIndexBai])estado=CAI;//Caso não esteja pulando e não esteja sobre chão, o estado é CAI
+        else if(input.contains(" ")){estado=PULA;acelVert=20;}//Caso não esteja pulando nem caindo, e receba o input de pular, pula
+        else if(input.contains("w")||input.contains("W")||input.contains("s")||input.contains("S")){estado=ANDA;}
+        else if(input.contains("a")||input.contains("A")||input.contains("d")||input.contains("D")){//Caso não esteja pulando nem caindo, e receba o input, anda
+            estado=ANDA;
+            if(input.contains("a")||input.contains("A")){
+                direcao=ESQ;
+                direcaoReajuste=0;    
+            }
+            if(input.contains("d")||input.contains("D")){
+                direcao=DIR;
+                direcaoReajuste=descritor[ANDA][LARGURA]-sdifX*2;
+            }
+        }
+    }
+    //Checa se o Player esta ocioso
+    void ChecaOciosidade(String input){
+        System.out.println("input="+input);
+        if(input.isEmpty())framePARADOIntervalCount++;//Conta os frames que Player não recebeu nenhum input
+        else framePARADOIntervalCount=0;//Caso Player receba algum input, reseta a contagem de frames sem input
+        if(framePARADOIntervalCount>=GerenteFPS.tempoIntervalo/2&&estado!=CAI)estado=PARADO;//Caso Player não tenha recebido nenhum input por 12 frames (0.5s), muda seu estado para PARADO
+    }
     //Retorna um retângulo com a hitBox do Objeto
     static Rectangle HitBox(){
         Rectangle hitBox=new Rectangle(posX,posY,sizeX,sizeY);
         return hitBox;
     }
-
     //Checagem de colisões do Objeto. (Se sua hitbox está sobrebosta a alguma outra)
     void Colisoes(){
         pathBlocked[pathBlockedIndexEsq]=false;
         pathBlocked[pathBlockedIndexDir]=false;
         pathBlocked[pathBlockedIndexCim]=false;
-        pathBlocked[pathBlockedIndexBai]=true;//Setado em true temporariamente para testes de movimentação
-        //NOTA: a sensibilidade do intersect é de 2 pixels. (Intervalos menores não são reconhecidos)
+        pathBlocked[pathBlockedIndexBai]=false;
+        //NOTA: a sensibilidade do intersect é de ~2 pixels. (Intervalos menores não são reconhecidos)
         if(HitBox().intersects(Player2.HitBox())){
             float relX=posX-Player2.posX;
             float relY=posY-Player2.posY;
@@ -161,9 +172,21 @@ class Player1 extends Objeto{
             if(relY<(float)sizeY*0.96)pathBlocked[pathBlockedIndexBai]=true;//Players se trombando por cima
             //System.out.println("Player1: relX="+relX+" relY="+relY+" ((float)sizeX)*0.92="+((float)sizeX)*0.92)
         }
-        if(HitBox().intersects(new Rectangle()));//Checagem com cenario e items. (Como checar com diversos objetos diferentes da mesma classe?)
+        if(HitBox().intersects(new Rectangle()));//Checagem com items.
+        for(int i=0; i<ClienteFrame.blocosNum; i++){//Checagem com cenario. (Checa todos os blocos individualmente)
+            if(HitBox().intersects(ClienteFrame.cenario[i].HitBox())){
+                //System.out.println("Player1: Colisao com bloco "+i);
+                if((float)(posX+sizeX)*0.98>ClienteFrame.cenario[i].posX && (float)(posX)*0.98<ClienteFrame.cenario[i].posX+ClienteFrame.cenario[i].sizeX){
+                    if(posY>ClienteFrame.cenario[i].posY)pathBlocked[pathBlockedIndexCim]=true;
+                    if(posY+sizeY>=ClienteFrame.cenario[i].posY)pathBlocked[pathBlockedIndexBai]=true;
+                }
+                if((float)(posY+sizeY)*0.98>ClienteFrame.cenario[i].posY && (float)(posY)*0.98<ClienteFrame.cenario[i].posY+ClienteFrame.cenario[i].sizeY){
+                    if(posX<ClienteFrame.cenario[i].posX)pathBlocked[pathBlockedIndexDir]=true;
+                    if(posX>ClienteFrame.cenario[i].posX)pathBlocked[pathBlockedIndexEsq]=true;
+                }
+            }
+        }
     }
-
     /********************************************************************************************************************************/
     Player1(){
         //ANDA
@@ -221,8 +244,8 @@ class Player2 extends Player1{
     static int sposY=0;
 
     //Variáveis de controle do Player2
-    public static int posX = 150;//Posição da hitBox (0,0 = canto esquerdo superior)
-    public static int posY = 100;
+    public static int posX = 350;//Posição da hitBox (0,0 = canto esquerdo superior)
+    public static int posY = 50;
     public static int sizeX = 20;//Tamanho do Player2
     public static int sizeY = 75;
     public static int estado = PARADO;//O estado (ação) do Player2
@@ -234,21 +257,20 @@ class Player2 extends Player1{
     public static int acelVert=0;//Controle da aceleração vertical do Player2. (Atualmente alterada apenas pelo estado PULA)
 
     /********************************************************************************************************************************/
-    //Define o estado (ação) do Objeto
-    static void SetEstado(int set){
-        if(acelVert>0)estado=PULA;
-        else if(!pathBlocked[pathBlockedIndexBai])estado=CAI;
-        else if(set==PULA){estado=PULA;acelVert=10;}
-        else if(set==ANDA)estado=ANDA;
-        else estado=PARADO;
+    //Executa as ações de cada frame, aplicando os inputs e colisões. Também atualiza o frame e estado do Objeto
+    public void ExecutaAcao(String input){
+        Colisoes();//Checagem de colisões. Detecta quais direções estão bloqueadas
+        ChecaOciosidade(input);
+        SetEstado(input);
+        SetFrame();
+        SetPosition(input);
     }
-
     //Define a posição do Objeto
-    static void SetPosition(String mov){
+    void SetPosition(String mov){
         if((mov.contains("a")||mov.contains("A")) && !pathBlocked[pathBlockedIndexEsq]){posX-=2;sposX-=2;}
-        else if((mov.contains("d")||mov.contains("D")) && !pathBlocked[pathBlockedIndexDir]){posX+=2;sposX+=2;}
-        else if(mov.contains("s")||mov.contains("S")){posY+=1;sposY+=1;}
-        else if(mov.contains("w")||mov.contains("W")){posY-=1;sposY-=1;}
+        if((mov.contains("d")||mov.contains("D")) && !pathBlocked[pathBlockedIndexDir]){posX+=2;sposX+=2;}
+        if(mov.contains("s")||mov.contains("S")){posY+=1;sposY+=1;}
+        if(mov.contains("w")||mov.contains("W")){posY-=1;sposY-=1;}
         if(acelVert>0){
             if(!pathBlocked[pathBlockedIndexCim]){posY-=acelVert/3;sposY-=acelVert/3;}
             acelVert--;
@@ -258,61 +280,75 @@ class Player2 extends Player1{
             if(acelVert>-10)acelVert--;
         }
     }
-
-    //Executa as ações de cada frame, aplicando os inputs e colisões. Também atualiza o frame do Objeto e determina seu estado
-    public void ExecutaAcao(String input){
-        Colisoes();
-
-        if(input.contains("a")||input.contains("A")){
-            SetEstado(ANDA);
-            direcao=ESQ;
-            direcaoReajuste=0;
-            framePARADOIntervalCount=0;
-        }
-        else if(input.contains("d")||input.contains("D")){
-            SetEstado(ANDA);
-            direcao=DIR;
-            direcaoReajuste=descritor[ANDA][LARGURA]-sdifX*2;
-            framePARADOIntervalCount=0;
-        }
-        else if(input.contains("w")||input.contains("W")){}
-        else if(input.contains("s")||input.contains("S")){}
-        else if(framePARADOIntervalCount>=10){SetEstado(PARADO);framePARADOIntervalCount=0;}
-        else framePARADOIntervalCount++;
-        if(input.contains(" ")){
-            SetEstado(PULA);
-        }
-        if(estadoAnterior!=estado&&frame%(descritor[estado][NUM]/3)==0)frame=0;
-        else if(frame==descritor[estado][NUM]-1&&(estado==CAI||estado==PULA));//mantém o sprite no último frame da animação
-        else if(frame>=descritor[estado][NUM]-1)frame=0;
-        else frame++;
-        estadoAnterior=estado;
-        SetPosition(input);
+    void SetFrame(){
+        //if(estadoAnterior!=estado&&frame%(descritor[estado][NUM]/3)==0)frame=0;
+        if(estadoAnterior!=estado)frame=0;
+        else if(frame==descritor[estado][NUM]-1&&(estado==CAI||estado==PULA));//Mantém o sprite no último frame da animação
+        else if(frame>=descritor[estado][NUM]-1)frame=0;//Reseta o sprite da animação
+        else frame++;//Avança o sprite da animação
     }
-
+    //Define o estado (ação) do Objeto
+    void SetEstado(String input){
+        estadoAnterior=estado;//Registra o estado anterior, antes do input atual. (Usado em SetFrame)
+        if(acelVert>0)estado=PULA;//Caso esteja com aceleração vertical positiva, o estado é PULA
+        else if(!pathBlocked[pathBlockedIndexBai])estado=CAI;//Caso não esteja pulando e não esteja sobre chão, o estado é CAI
+        else if(input.contains(" ")){estado=PULA;acelVert=20;}//Caso não esteja pulando nem caindo, e receba o input de pular, pula
+        else if(input.contains("w")||input.contains("W")||input.contains("s")||input.contains("S")){estado=ANDA;}
+        else if(input.contains("a")||input.contains("A")||input.contains("d")||input.contains("D")){//Caso não esteja pulando nem caindo, e receba o input, anda
+            estado=ANDA;
+            if(input.contains("a")||input.contains("A")){
+                direcao=ESQ;
+                direcaoReajuste=0;    
+            }
+            if(input.contains("d")||input.contains("D")){
+                direcao=DIR;
+                direcaoReajuste=descritor[ANDA][LARGURA]-sdifX*2;
+            }
+        }
+    }
+    //Checa se o Player esta ocioso
+    void ChecaOciosidade(String input){
+        System.out.println("input="+input);
+        if(input.isEmpty())framePARADOIntervalCount++;//Conta os frames que Player não recebeu nenhum input
+        else framePARADOIntervalCount=0;//Caso Player receba algum input, reseta a contagem de frames sem input
+        if(framePARADOIntervalCount>=GerenteFPS.tempoIntervalo/2&&estado!=CAI)estado=PARADO;//Caso Player não tenha recebido nenhum input por 12 frames (0.5s), muda seu estado para PARADO
+    }
     //Retorna um retângulo com a hitBox do Objeto
     static Rectangle HitBox(){
         Rectangle hitBox=new Rectangle(posX,posY,sizeX,sizeY);
         return hitBox;
     }
-
-//Checagem de colisões do Objeto. (Se sua hitbox está sobrebosta a alguma outra)
-void Colisoes(){
-    pathBlocked[pathBlockedIndexEsq]=false;
-    pathBlocked[pathBlockedIndexDir]=false;
-    pathBlocked[pathBlockedIndexCim]=false;
-    pathBlocked[pathBlockedIndexBai]=true;//Setado em true temporariamente
-    //NOTA: a sensibilidade do intersect é de 2 pixels. (Intervalos menores não são reconhecidos)
-    if(HitBox().intersects(Player1.HitBox())){
-        float relX=posX-Player1.posX;
-        float relY=posY-Player1.posY;
-        if(relX>((float)sizeX)*0.89)pathBlocked[pathBlockedIndexEsq]=true;//Players se trombando pela direita
-        if(relX<-((float)sizeX)*0.89)pathBlocked[pathBlockedIndexDir]=true;//Players se trombando pela Esquerda
-        if(relY>(float)sizeY*0.96)pathBlocked[pathBlockedIndexCim]=true;//Players se trombando por baixo
-        if(relY<(float)sizeY*0.96)pathBlocked[pathBlockedIndexBai]=true;//Players se trombando por cima
+    //Checagem de colisões do Objeto. (Se sua hitbox está sobrebosta a alguma outra)
+    void Colisoes(){
+        pathBlocked[pathBlockedIndexEsq]=false;
+        pathBlocked[pathBlockedIndexDir]=false;
+        pathBlocked[pathBlockedIndexCim]=false;
+        pathBlocked[pathBlockedIndexBai]=false;
+        //NOTA: a sensibilidade do intersect é de ~2 pixels. (Intervalos menores não são reconhecidos)
+        if(HitBox().intersects(Player1.HitBox())){
+            float relX=posX-Player1.posX;
+            float relY=posY-Player1.posY;
+            if(relX>((float)sizeX)*0.89)pathBlocked[pathBlockedIndexEsq]=true;//Players se trombando pela direita
+            if(relX<-((float)sizeX)*0.89)pathBlocked[pathBlockedIndexDir]=true;//Players se trombando pela Esquerda
+            if(relY>(float)sizeY*0.96)pathBlocked[pathBlockedIndexCim]=true;//Players se trombando por baixo
+            if(relY<(float)sizeY*0.96)pathBlocked[pathBlockedIndexBai]=true;//Players se trombando por cima
+            //System.out.println("Player2: relX="+relX+" relY="+relY+" ((float)sizeX)*0.92="+((float)sizeX)*0.92)
+        }
+        if(HitBox().intersects(new Rectangle()));//Checagem com items.
+        for(int i=0; i<ClienteFrame.blocosNum; i++){//Checagem com cenario. (Checa todos os blocos individualmente)
+            if(HitBox().intersects(ClienteFrame.cenario[i].HitBox())){
+                //System.out.println("Player1: Colisao com bloco "+i);
+                if((float)(posX+sizeX)*0.98>ClienteFrame.cenario[i].posX && (float)(posX)*0.98<ClienteFrame.cenario[i].posX+ClienteFrame.cenario[i].sizeX){
+                    if(posY>ClienteFrame.cenario[i].posY)pathBlocked[pathBlockedIndexCim]=true;
+                    if(posY+sizeY>=ClienteFrame.cenario[i].posY)pathBlocked[pathBlockedIndexBai]=true;
+                }
+                if((float)(posY+sizeY)*0.98>ClienteFrame.cenario[i].posY && (float)(posY)*0.98<ClienteFrame.cenario[i].posY+ClienteFrame.cenario[i].sizeY){
+                    if(posX<ClienteFrame.cenario[i].posX)pathBlocked[pathBlockedIndexDir]=true;
+                    if(posX>ClienteFrame.cenario[i].posX)pathBlocked[pathBlockedIndexEsq]=true;
+                }
+            }
+        }
     }
-    if(HitBox().intersects(new Rectangle()));//Checagem com cenario e items
-}
     /********************************************************************************************************************************/
     Player2(){
         //ANDA
