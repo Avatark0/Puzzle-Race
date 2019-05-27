@@ -83,9 +83,10 @@ static long tempoIntervalo=1000/48;//48 frames/s
 
 public synchronized void run(){
     try{
+      while(!Sala.p1)wait(50);
       while(!Servidor.fecharSala){
         tempoInicio=System.currentTimeMillis();//Marca o tempo de início do frame
-        Sala.ExecutaInputs(Sala.inputString, Sala.player);
+        Sala.ExecutaInputs(Sala.inputString, 0);//0 tem q ser substituido pelo numero do player
         Sala.ResetaInputString();
         Sala.AtualizaOutputString();
         Sala.EnviaOutputString();
@@ -94,22 +95,25 @@ public synchronized void run(){
         if(tempoExecucao>tempoIntervalo*1.2)System.out.println("GERENTE_FPS: Frames atrasado! tempoExecucao: "+tempoExecucao+", tempoIntervalo: "+tempoIntervalo);//Notifica caso frame tenha levado mais tempo que o esperado
         while(System.currentTimeMillis()-tempoInicio<tempoIntervalo)wait(tempoIntervalo-tempoExecucao);//Espera pelo tempo do frame. Está correto?
       }
-    }catch(IllegalArgumentException erro1){System.err.println("GERENE_FPS: IllegalArgumentException");}
-    catch(IllegalMonitorStateException erro2){System.err.println("GERENE_FPS: IllegalMonitorStateException");}
-    catch(InterruptedException erro3){System.err.println("GERENE_FPS: InterruptedException");}
-    catch(Exception e){System.err.println("GERENE_FPS: Outro erro");}
+    }catch(IllegalArgumentException erro1){System.err.println("GERENTE_FPS: IllegalArgumentException");}
+    catch(IllegalMonitorStateException erro2){System.err.println("GERENTE_FPS: IllegalMonitorStateException");}
+    catch(InterruptedException erro3){System.err.println("GERENTE_FPS: InterruptedException");}
+    //catch(Exception e){System.err.println("GERENTE_FPS: Outro erro");}
   }
 }
 
 //A SALA
 class Sala extends Thread{
-  Socket clientSocket;
+  Socket clientSocket=null;
   final static int MAXPLAYERS=Servidor.MAXPLAYERS;
   static Player1[] playerArray=new Player1[MAXPLAYERS];//Array de jogadores. Cada jogador pussui uma classe própria, todos extendidos de Player1
   static PrintStream os[]=new PrintStream[MAXPLAYERS];
   static int cont=0;
   static String inputString;
   static String outputString;
+  static boolean p1=false;
+  static boolean p2=false;
+  Cenario[] cenario;
 
   Sala(Socket clientSocket){
     this.clientSocket=clientSocket;
@@ -118,22 +122,28 @@ class Sala extends Thread{
     playerArray[0]=new Player1();
     playerArray[1]=new Player2();  
   }
+  void setCenario(){
+    for(int i=0;i<6;i++){
+      cenario[i]=new Cenario(i);
+    }
+  }
   static void ExecutaInputs(String input, int player){
-    playerArray[player].ExecutaAcao(input);//Checagem de colisões. Detecta quais direções estão bloqueadas
+    Player1.ExecutaAcao(input);//Checagem de colisões. Detecta quais direções estão bloqueadas
   }
   static void ResetaInputString(){
     inputString="";
   }
   static void AtualizaOutputString(){//Checa as posições dos Players e atualiza os valores na outputString
-    int p1x=Player1.posX;
-    int p1y=Player1.posY;
-    int p1Estado=Player1.estado;
-    int p1Direcao=Player1.direcao;
-    int p2x=Player2.posX;
-    int p2y=Player2.posY;
-    int p2Estado=Player2.estado;
-    int p2Direcao=Player2.direcao;
-    String aux={"0:"+p1x+","+p1y+","+p1Estado+","+p1Direcao+".1:"+p2x+","+p2y+","+p1Estado+","+p1Direcao+"."};
+    String p1x=String.valueOf(Player1.posX);
+    String p1y=String.valueOf(Player1.posY);
+    String p1Estado=String.valueOf(Player1.estado);
+    String p1Direcao=String.valueOf(Player1.direcao);
+    String p2x=String.valueOf(Player2.posX);
+    String p2y=String.valueOf(Player2.posY);
+    String p2Estado=String.valueOf(Player2.estado);
+    String p2Direcao=String.valueOf(Player2.direcao);
+    String aux="";
+    aux=aux.concat("0:").concat(p1x).concat(",").concat(p1y).concat(",").concat(p1Estado).concat(",").concat(p1Direcao).concat(".1:").concat(p2x).concat(",").concat(p2y).concat(",").concat(p2Estado).concat(",").concat(p2Direcao).concat(".");
     outputString=aux;
   }
   static void EnviaOutputString(){
@@ -152,6 +162,11 @@ class Sala extends Thread{
       for(int i=0;i<MAXPLAYERS;i++){
         if(!Servidor.slot[i]){
           slotNumber=i;
+          if(slotNumber==0)setCenario();
+          switch(i){
+            case 0: p1=true; break;
+            
+          }
           Servidor.OcupaSlot(slotNumber);
           cont++;
           break;

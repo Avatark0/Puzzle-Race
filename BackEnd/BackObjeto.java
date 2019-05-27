@@ -96,7 +96,7 @@ class Player1 extends BackObjeto{
 
     /********************************************************************************************************************************/
     //Executa as ações de cada frame, aplicando os inputs e colisões. Também atualiza o frame e estado do Objeto
-    public void ExecutaAcao(String input){
+    public static void ExecutaAcao(String input){
         Colisoes();//Checagem de colisões. Detecta quais direções estão bloqueadas
         ChecaOciosidade(input);
         SetEstado(input);
@@ -104,7 +104,7 @@ class Player1 extends BackObjeto{
         SetPosition(input);
     }
     //Define a posição do Objeto
-    void SetPosition(String mov){
+    static void SetPosition(String mov){
         if((mov.contains("a")||mov.contains("A")) && !pathBlocked[pathBlockedIndexEsq]){posX-=2;sposX-=2;}
         if((mov.contains("d")||mov.contains("D")) && !pathBlocked[pathBlockedIndexDir]){posX+=2;sposX+=2;}
         if(mov.contains("s")||mov.contains("S")){posY+=1;sposY+=1;}
@@ -118,7 +118,7 @@ class Player1 extends BackObjeto{
             if(acelVert>-10)acelVert--;
         }
     }
-    void SetFrame(){
+    static void SetFrame(){
         //if(estadoAnterior!=estado&&frame%(descritor[estado][NUM]/3)==0)frame=0;
         if(estadoAnterior!=estado)frame=0;
         else if(frame==descritor[estado][NUM]-1&&(estado==CAI||estado==PULA));//Mantém o sprite no último frame da animação
@@ -126,7 +126,7 @@ class Player1 extends BackObjeto{
         else frame++;//Avança o sprite da animação
     }
     //Define o estado (ação) do Objeto
-    void SetEstado(String input){
+    static void SetEstado(String input){
         estadoAnterior=estado;//Registra o estado anterior, antes do input atual. (Usado em SetFrame)
         if(acelVert>0)estado=PULA;//Caso esteja com aceleração vertical positiva, o estado é PULA
         else if(!pathBlocked[pathBlockedIndexBai])estado=CAI;//Caso não esteja pulando e não esteja sobre chão, o estado é CAI
@@ -145,7 +145,7 @@ class Player1 extends BackObjeto{
         }
     }
     //Checa se o Player esta ocioso
-    void ChecaOciosidade(String input){
+    static void ChecaOciosidade(String input){
         System.out.println("input="+input);
         if(input.isEmpty())framePARADOIntervalCount++;//Conta os frames que Player não recebeu nenhum input
         else framePARADOIntervalCount=0;//Caso Player receba algum input, reseta a contagem de frames sem input
@@ -161,7 +161,7 @@ class Player1 extends BackObjeto{
     //Cenário (em construção)
     public static int blocosNum=6;//Número de blocos do cenário
     public static Cenario[] cenario=new Cenario[blocosNum];//Vetor de blocos do cenário
-    void Colisoes(){
+    static void Colisoes(){
         pathBlocked[pathBlockedIndexEsq]=false;
         pathBlocked[pathBlockedIndexDir]=false;
         pathBlocked[pathBlockedIndexCim]=false;
@@ -262,7 +262,7 @@ class Player2 extends Player1{
 
     /********************************************************************************************************************************/
     //Executa as ações de cada frame, aplicando os inputs e colisões. Também atualiza o frame e estado do Objeto
-    public void ExecutaAcao(String input){
+    public static void ExecutaAcao(String input){
         Colisoes();//Checagem de colisões. Detecta quais direções estão bloqueadas
         ChecaOciosidade(input);
         SetEstado(input);
@@ -270,7 +270,7 @@ class Player2 extends Player1{
         SetPosition(input);
     }
     //Define a posição do Objeto
-    void SetPosition(String mov){
+    static void SetPosition(String mov){
         if((mov.contains("a")||mov.contains("A")) && !pathBlocked[pathBlockedIndexEsq]){posX-=2;sposX-=2;}
         if((mov.contains("d")||mov.contains("D")) && !pathBlocked[pathBlockedIndexDir]){posX+=2;sposX+=2;}
         if(mov.contains("s")||mov.contains("S")){posY+=1;sposY+=1;}
@@ -284,7 +284,7 @@ class Player2 extends Player1{
             if(acelVert>-10)acelVert--;
         }
     }
-    void SetFrame(){
+    static void SetFrame(){
         //if(estadoAnterior!=estado&&frame%(descritor[estado][NUM]/3)==0)frame=0;
         if(estadoAnterior!=estado)frame=0;
         else if(frame==descritor[estado][NUM]-1&&(estado==CAI||estado==PULA));//Mantém o sprite no último frame da animação
@@ -292,7 +292,7 @@ class Player2 extends Player1{
         else frame++;//Avança o sprite da animação
     }
     //Define o estado (ação) do Objeto
-    void SetEstado(String input){
+    static void SetEstado(String input){
         estadoAnterior=estado;//Registra o estado anterior, antes do input atual. (Usado em SetFrame)
         if(acelVert>0)estado=PULA;//Caso esteja com aceleração vertical positiva, o estado é PULA
         else if(!pathBlocked[pathBlockedIndexBai])estado=CAI;//Caso não esteja pulando e não esteja sobre chão, o estado é CAI
@@ -311,7 +311,7 @@ class Player2 extends Player1{
         }
     }
     //Checa se o Player esta ocioso
-    void ChecaOciosidade(String input){
+    static void ChecaOciosidade(String input){
         System.out.println("input="+input);
         if(input.isEmpty())framePARADOIntervalCount++;//Conta os frames que Player não recebeu nenhum input
         else framePARADOIntervalCount=0;//Caso Player receba algum input, reseta a contagem de frames sem input
@@ -326,7 +326,7 @@ class Player2 extends Player1{
     //Cenário (em construção)
     public static int blocosNum=6;//Número de blocos do cenário
     public static Cenario[] cenario=new Cenario[blocosNum];//Vetor de blocos do cenário
-    void Colisoes(){
+    static void Colisoes(){
         pathBlocked[pathBlockedIndexEsq]=false;
         pathBlocked[pathBlockedIndexDir]=false;
         pathBlocked[pathBlockedIndexCim]=false;
