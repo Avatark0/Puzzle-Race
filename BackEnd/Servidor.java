@@ -73,6 +73,7 @@ class Servidor {
     }
   }
 }
+
 class BackGerenteFPS extends TimerTask{
 //Controles de tempo de cada frame
 static long tempoInicio;
@@ -83,7 +84,9 @@ static long tempoIntervalo=1000/48;//48 frames/s
 public synchronized void run(){
     try{
       while(!Servidor.fecharSala){
-        tempoInicio=System.currentTimeMillis();//Marca o tempo de inicio do frame
+        tempoInicio=System.currentTimeMillis();//Marca o tempo de início do frame
+        Sala.ExecutaInputs(Sala.inputString, Sala.player);
+        Sala.ResetaInputString();
         Sala.AtualizaOutputString();
         Sala.EnviaOutputString();
         tempoFim=System.currentTimeMillis();//Registra o tempo de encerramento do frame
@@ -105,25 +108,33 @@ class Sala extends Thread{
   static Player1[] playerArray=new Player1[MAXPLAYERS];//Array de jogadores. Cada jogador pussui uma classe própria, todos extendidos de Player1
   static PrintStream os[]=new PrintStream[MAXPLAYERS];
   static int cont=0;
+  static String inputString;
   static String outputString;
 
   Sala(Socket clientSocket){
     this.clientSocket=clientSocket;
   }
-  
-  void SetPlayers(){
+  void SetPlayers(){//Pode ser removido. Basta utilizar switch(player) em ExecutaInputs
     playerArray[0]=new Player1();
     playerArray[1]=new Player2();  
   }
-
-  static void AtualizaOutputString(){
-    //Checa as posições dos Players e atualiza os valores na outputString
-    /*
-    player1posX
-    player1posY
-    player2posX
-    player2posY
-    */
+  static void ExecutaInputs(String input, int player){
+    playerArray[player].ExecutaAcao(input);//Checagem de colisões. Detecta quais direções estão bloqueadas
+  }
+  static void ResetaInputString(){
+    inputString="";
+  }
+  static void AtualizaOutputString(){//Checa as posições dos Players e atualiza os valores na outputString
+    int p1x=Player1.posX;
+    int p1y=Player1.posY;
+    int p1Estado=Player1.estado;
+    int p1Direcao=Player1.direcao;
+    int p2x=Player2.posX;
+    int p2y=Player2.posY;
+    int p2Estado=Player2.estado;
+    int p2Direcao=Player2.direcao;
+    String aux={"0:"+p1x+","+p1y+","+p1Estado+","+p1Direcao+".1:"+p2x+","+p2y+","+p1Estado+","+p1Direcao+"."};
+    outputString=aux;
   }
   static void EnviaOutputString(){
     for(int i=0;i<MAXPLAYERS;i++)
@@ -131,9 +142,6 @@ class Sala extends Thread{
         os[i].println(outputString);
         os[i].flush();
       }
-  }
-  void ExecutaInputs(String input, int player){
-    playerArray[player].ExecutaAcao(input);//Checagem de colisões. Detecta quais direções estão bloqueadas
   }
 
   public void run(){
@@ -160,7 +168,7 @@ class Sala extends Thread{
       //Loop de leitura dos inputs do cliente.
       do{
         inputLine = is.nextLine();
-        //ExecutaInputs(inputLine, slotNumber);
+        inputString=inputString.concat(inputLine);
         if(inputLine.contains(ESC)){//Solicitada desconexão por parte do cliente. (inputLine contém ESC)
           os[slotNumber].println("::");
           os[slotNumber].flush();
