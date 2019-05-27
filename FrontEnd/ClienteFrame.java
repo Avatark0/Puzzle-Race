@@ -102,8 +102,6 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener{
     public void paintComponent(Graphics g){
       super.paintComponent(g);
       g.drawImage(imgCenario[fundo], 0, 0, getSize().width, getSize().height, this);
-      g.drawRect(Player1.HitBox().x,Player1.HitBox().y,Player1.HitBox().width,Player1.HitBox().height);
-      g.drawRect(Player2.HitBox().x,Player2.HitBox().y,Player2.HitBox().width,Player2.HitBox().height);
       ////////////////////
       //Atualmente Cenario tem hitbox estática. Será necessário instânciar cada unidade do cenário, ou é possivel armazenar tudo de forma estática?
       for(int i=0; i<blocosNum; i++){
@@ -190,7 +188,6 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener{
 
   //MAIN - INICIA OS THREADS
   public static void main(String[] args){
-    AplicaInputsRecebidosDoServidor("0:");
     new Thread(new ClienteFrame()).start();
     new Thread(new GerenteFPS()).start();
     ConstroiCenario();
@@ -204,7 +201,8 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener{
     try{
       //MUDOU, tiramos esse while 
         //while(Servidor.salaCheia)Thread.sleep(500);//Intervalo de 0.5 segundos antes de checar o servidor por vagas
-      socket=new Socket("127.0.0.1", 80);
+      //socket=new Socket("127.0.0.1", 80);
+      socket=new Socket("200.145.148.186", 80);
       os=new PrintStream(socket.getOutputStream(), true);
       osSet=true;
       is=new Scanner(socket.getInputStream());
@@ -242,7 +240,7 @@ class GerenteFPS extends TimerTask{
   static long tempoInicio;
   static long tempoFim=0;
   static long tempoExecucao=0;
-  static long tempoIntervalo=1000/24;//24 frames/s
+  static long tempoIntervalo=1000/6;//24 frames/s
 
   public synchronized void run(){
     try{
@@ -257,9 +255,9 @@ class GerenteFPS extends TimerTask{
         if(tempoExecucao>tempoIntervalo*1.2)System.out.println("GERENTE_FPS: Frames atrasado! tempoExecucao: "+tempoExecucao+", tempoIntervalo: "+tempoIntervalo);//Notifica caso frame tenha levado mais tempo que o esperado
         while(System.currentTimeMillis()-tempoInicio<tempoIntervalo)wait(tempoIntervalo-tempoExecucao);//Espera pelo tempo do frame. Está correto?
       }
-    }catch(IllegalArgumentException erro1){System.err.println("GERENE_FPS: IllegalArgumentException");}
-    catch(IllegalMonitorStateException erro2){System.err.println("GERENE_FPS: IllegalMonitorStateException");}
-    catch(InterruptedException erro3){System.err.println("GERENE_FPS: InterruptedException");}
+    }catch(IllegalArgumentException erro1){System.err.println("GERENTE_FPS: IllegalArgumentException");}
+    catch(IllegalMonitorStateException erro2){System.err.println("GERENTE_FPS: IllegalMonitorStateException");}
+    catch(InterruptedException erro3){System.err.println("GERENTE_FPS: InterruptedException");}
     //catch(Exception e){System.err.println("GERENTE_FPS: Outro erro");}
   }
 }
