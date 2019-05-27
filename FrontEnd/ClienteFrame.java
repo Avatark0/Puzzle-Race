@@ -203,7 +203,8 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener{
     Scanner is=null;
     //TENTATIVA DE CONEXÃO COM O SERVIDOR
     try{
-      while(Servidor.salaCheia)Thread.sleep(500);//Intervalo de 0.5 segundos antes de checar o servidor por vagas
+      //MUDOU, tiramos esse while 
+        //while(Servidor.salaCheia)Thread.sleep(500);//Intervalo de 0.5 segundos antes de checar o servidor por vagas
       socket=new Socket("127.0.0.1", 80);
       os=new PrintStream(socket.getOutputStream(), true);
       osSet=true;
@@ -212,9 +213,9 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener{
       System.err.println("CLIENTE: Don't know about host");
     }catch(IOException e){
       System.err.println("CLIENTE: Couldn't get I/O for the connection to host");
-    }catch(InterruptedException e){
+    }/*catch(InterruptedException e){
       System.err.println("CLIENTE: Problema em Thread.sleep");
-    }
+    } mudou, tiramos esse catch porque nao é necessário, uma vez que comentamos o while*/
     //CONEXÃO ESTABELECIDA COM SUCESSO
     try{
       //INPUTS DO SERVIDOR - AQUI AS AÇÕES SÃO RECEBIDAS
@@ -247,7 +248,7 @@ class GerenteFPS extends TimerTask{
   public synchronized void run(){
     try{
       //Loop de cada frame
-      while(!Servidor.fecharSala){
+      while(true){ //mudou, era: while(!Servidor.fecharSala)
         tempoInicio=System.currentTimeMillis();//Marca o tempo de inicio do frame
         ClienteFrame.janela.repaint();//Atualiza a janela gráfica (pelo cliente)
         ClienteFrame.SendInputs();//Envia os inputs ao Servidor
