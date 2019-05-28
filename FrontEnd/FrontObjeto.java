@@ -189,6 +189,10 @@ class Player2 extends Player1{
         posX = Integer.parseInt(valoresplayers[0]);
         posY = Integer.parseInt(valoresplayers[1]);
         estado = Integer.parseInt(valoresplayers[2]);
+        //Debugging:
+        System.out.println("Player2: "+valoresplayers[3]);
+        valoresplayers[3]="1";
+        ///////////
         direcao = Integer.parseInt(valoresplayers[3]);
     }
 

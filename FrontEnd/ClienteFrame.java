@@ -201,8 +201,8 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener{
     try{
       //MUDOU, tiramos esse while 
         //while(Servidor.salaCheia)Thread.sleep(500);//Intervalo de 0.5 segundos antes de checar o servidor por vagas
-      //socket=new Socket("127.0.0.1", 80);
-      socket=new Socket("200.145.148.186", 80);
+      socket=new Socket("127.0.0.1", 80);
+      //socket=new Socket("200.145.148.186", 80);
       os=new PrintStream(socket.getOutputStream(), true);
       osSet=true;
       is=new Scanner(socket.getInputStream());
