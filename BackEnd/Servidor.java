@@ -109,11 +109,12 @@ class Sala extends Thread{
   static Player1[] playerArray=new Player1[MAXPLAYERS];//Array de jogadores. Cada jogador pussui uma classe própria, todos extendidos de Player1
   static PrintStream os[]=new PrintStream[MAXPLAYERS];
   static int cont=0;
-  static String inputString;
+  static String inputString="";
   static String outputString;
   static boolean p1=false;
   static boolean p2=false;
-  Cenario[] cenario;
+  public static int blocosNum=6;//Número de blocos do cenário
+  public static Cenario[] cenario=new Cenario[blocosNum];//Vetor de blocos do cenário
 
   Sala(Socket clientSocket){
     this.clientSocket=clientSocket;

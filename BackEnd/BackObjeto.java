@@ -178,15 +178,15 @@ class Player1 extends BackObjeto{
         }
         if(HitBox().intersects(new Rectangle()));//Checagem com items.
         for(int i=0; i<blocosNum; i++){//Checagem com cenario. (Checa todos os blocos individualmente)
-            if(HitBox().intersects(cenario[i].HitBox())){
+            if(HitBox().intersects(Sala.cenario[i].HitBox())){
                 //System.out.println("Player1: Colisao com bloco "+i);
-                if((float)(posX+sizeX)*0.98>cenario[i].posX && (float)(posX)*0.98<cenario[i].posX+cenario[i].sizeX){
-                    if(posY>cenario[i].posY)pathBlocked[pathBlockedIndexCim]=true;
-                    if(posY+sizeY>=cenario[i].posY)pathBlocked[pathBlockedIndexBai]=true;
+                if((float)(posX+sizeX)*0.98>Sala.cenario[i].posX && (float)(posX)*0.98<Sala.cenario[i].posX+Sala.cenario[i].sizeX){
+                    if(posY>Sala.cenario[i].posY)pathBlocked[pathBlockedIndexCim]=true;
+                    if(posY+sizeY>=Sala.cenario[i].posY)pathBlocked[pathBlockedIndexBai]=true;
                 }
-                if((float)(posY+sizeY)*0.98>cenario[i].posY && (float)(posY)*0.98<cenario[i].posY+cenario[i].sizeY){
-                    if(posX<cenario[i].posX)pathBlocked[pathBlockedIndexDir]=true;
-                    if(posX>cenario[i].posX)pathBlocked[pathBlockedIndexEsq]=true;
+                if((float)(posY+sizeY)*0.98>Sala.cenario[i].posY && (float)(posY)*0.98<Sala.cenario[i].posY+Sala.cenario[i].sizeY){
+                    if(posX<Sala.cenario[i].posX)pathBlocked[pathBlockedIndexDir]=true;
+                    if(posX>Sala.cenario[i].posX)pathBlocked[pathBlockedIndexEsq]=true;
                 }
             }
         }
