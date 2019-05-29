@@ -46,7 +46,7 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener{
     //Determina propriedades da janela e carrega os sprites.
     Janela(){
       try{
-        setPreferredSize(new Dimension(800, 600));
+        setPreferredSize(new Dimension(1072, 603));
         imgCenario[0]=ImageIO.read(new File("fundo.jpeg"));
         imgCenario[1]=ImageIO.read(new File("fundo2.jpeg"));
         
@@ -128,7 +128,7 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener{
   ClienteFrame(){
     super("Cliente do chat");
     janela=new Janela();//instancia a janela gráfica do jogo
-    setPreferredSize(new Dimension(800,600));//PreferredSize é chamado duas vezes (aqui e em Janela()). Onde é melhor?
+    //setPreferredSize(new Dimension(800,600));//PreferredSize é chamado duas vezes (aqui e em Janela()). Onde é melhor?
     add(janela,BorderLayout.CENTER);
     pack();
     setVisible(true);
@@ -201,8 +201,8 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener{
     try{
       //MUDOU, tiramos esse while 
         //while(Servidor.salaCheia)Thread.sleep(500);//Intervalo de 0.5 segundos antes de checar o servidor por vagas
-      socket=new Socket("127.0.0.1", 80);
-      //socket=new Socket("200.145.148.186", 80);
+      //socket=new Socket("127.0.0.1", 80);
+      socket=new Socket("200.145.148.185", 80);
       os=new PrintStream(socket.getOutputStream(), true);
       osSet=true;
       is=new Scanner(socket.getInputStream());
@@ -240,15 +240,17 @@ class GerenteFPS extends TimerTask{
   static long tempoInicio;
   static long tempoFim=0;
   static long tempoExecucao=0;
-  static long tempoIntervalo=1000/6;//24 frames/s
+  static long tempoIntervalo=1000/24;//24 frames/s
 
   public synchronized void run(){
     try{
       //Loop de cada frame
       while(true){ //mudou, era: while(!Servidor.fecharSala)
         tempoInicio=System.currentTimeMillis();//Marca o tempo de inicio do frame
+        Player1.ExecutaAcao();
+        //Player2.ExecutaAcao();
         ClienteFrame.janela.repaint();//Atualiza a janela gráfica (pelo cliente)
-        ClienteFrame.SendInputs();//Envia os inputs ao Servidor
+        ClienteFrame.SendInputs();//Envia os inputs ao ServidoR
         //Controle de encerramento do frame:
         tempoFim=System.currentTimeMillis();//Registra o tempo de encerramento do frame
         tempoExecucao=tempoFim-tempoInicio;//Calcula o tempo de execução deste frame

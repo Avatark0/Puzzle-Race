@@ -88,7 +88,7 @@ class Player1 extends FrontObjeto{
 
     /********************************************************************************************************************************/
     //Executa as ações de cada frame, aplicando os inputs e colisões. Também atualiza o frame e estado do Objeto
-    public void ExecutaAcao(String input){
+    public static void ExecutaAcao(){
         SetFrame();
         SetSpritePosition();
     }
@@ -100,15 +100,18 @@ class Player1 extends FrontObjeto{
         posY = Integer.parseInt(valoresplayers[1]);
         estado = Integer.parseInt(valoresplayers[2]);
         direcao = Integer.parseInt(valoresplayers[3]);
+        if(direcao==ESQ) direcaoReajuste = 0;
+        else direcaoReajuste = descritor[ANDA][LARGURA] - sdifX*2;
+        System.out.println("Player 1: posX: "+posX+", posY: "+posY+", estado: "+estado+", direcao: "+direcao);
     }
 
-    void SetSpritePosition(){
+    static void SetSpritePosition(){
         //Determinar a posição do sprite baseada na posição do objeto
         sposX=posX-(descritor[ANDA][LARGURA]-sizeX)/2+sdifX;
         sposY=posY-(descritor[ANDA][ALTURA]-sizeY)/2+sdifY;
     }
 
-    void SetFrame(){
+    static void SetFrame(){
         //if(estadoAnterior!=estado&&frame%(descritor[estado][NUM]/3)==0)frame=0;
         if(estadoAnterior!=estado)frame=0;
         else if(frame==descritor[estado][NUM]-1&&(estado==CAI||estado==PULA));//Mantém o sprite no último frame da animação
@@ -189,20 +192,17 @@ class Player2 extends Player1{
         posX = Integer.parseInt(valoresplayers[0]);
         posY = Integer.parseInt(valoresplayers[1]);
         estado = Integer.parseInt(valoresplayers[2]);
-        //Debugging:
-        System.out.println("Player2: "+valoresplayers[3]);
-        valoresplayers[3]="1";
-        ///////////
         direcao = Integer.parseInt(valoresplayers[3]);
+        //System.out.println("posX: "+posX+", posY: "+posY+", estado: "+estado+", direcao: "+direcao);
     }
 
-    void SetSpritePosition(){
+    static void SetSpritePosition(){
         //Determinar a posição do sprite baseada na posição do objeto
         sposX=posX-(descritor[ANDA][LARGURA]-sizeX)/2+sdifX;
         sposY=posY-(descritor[ANDA][ALTURA]-sizeY)/2+sdifY;
     }
 
-    void SetFrame(){
+    static void SetFrame(){
         //if(estadoAnterior!=estado&&frame%(descritor[estado][NUM]/3)==0)frame=0;
         if(estadoAnterior!=estado)frame=0;
         else if(frame==descritor[estado][NUM]-1&&(estado==CAI||estado==PULA));//Mantém o sprite no último frame da animação
