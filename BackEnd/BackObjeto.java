@@ -44,12 +44,25 @@ class Cenario extends BackObjeto{
     //Construtor
     Cenario(int tipo){
         switch(tipo){
-            case 0:posX=  0;posY=150; break;
-            case 1:posX=100;posY=150; break;
-            case 2:posX=200;posY=250; break;
-            case 3:posX=300;posY=150; break;
-            case 4:posX=100;posY=250; break;
-            case 5:posX=300;posY=250; break;
+            //Contorno
+            case  0:posX=   0;posY=603;sizeX=1072;sizeY= 13;break;//Chão
+            case  1:posX=   0;posY=  0;sizeX=  11;sizeY=603;break;//Parede esquerda
+            case  2:posX=1050;posY=  0;sizeX=  11;sizeY=603;break;//Parede direita
+            //Altura 1
+            case  3:posX= 111;posY=540;sizeX=  50;sizeY= 50;break;//Escada 1, bloco 1
+            case  4:posX=  61;posY=490;sizeX=  50;sizeY= 50;break;//Escada 1, bloco 2
+            case  5:posX=  11;posY=440;sizeX=  50;sizeY= 50;break;//Escada 1, bloco 3
+            case  6:posX= 910;posY=540;sizeX=  50;sizeY= 50;break;//Escada 2, bloco 1
+            case  7:posX= 960;posY=490;sizeX=  50;sizeY= 50;break;//Escada 2, bloco 2
+            case  8:posX=1010;posY=440;sizeX=  50;sizeY= 50;break;//Escada 2, bloco 3
+            //Altura 2
+            case  9:posX=  90;posY=390;sizeX= 441;sizeY= 10;break;//Plataforma esquerda
+            case 10:posX= 630;posY=390;sizeX= 441;sizeY= 10;break;//Plataforma direita
+            //Altura 3
+            case 11:posX= 960;posY=490;sizeX=  50;sizeY= 50;break;//Plataforma esquerda
+            case 12:posX=1010;posY=440;sizeX=  50;sizeY= 50;break;//Plataforma direita
+            case 13:posX= 960;posY=490;sizeX=  50;sizeY= 50;break;//Plataforma esquerda
+            case 14:posX=1010;posY=440;sizeX=  50;sizeY= 50;break;//Plataforma direita
         }
     }
 

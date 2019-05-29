@@ -144,10 +144,11 @@ class Sala extends Thread{
     String p2Estado=String.valueOf(Player2.estado);
     String p2Direcao=String.valueOf(Player2.direcao);
     String aux="";
-    aux=aux.concat("0:").concat(p1x).concat(",").concat(p1y).concat(",").concat(p1Estado).concat(",").concat(p1Direcao).concat(".1:").concat(p2x).concat(",").concat(p2y).concat(",").concat(p2Estado).concat(",").concat(p2Direcao).concat(".");
+    aux=aux.concat("0:").concat(p1x).concat(",").concat(p1y).concat(",").concat(p1Estado).concat(",").concat(p1Direcao).concat(".1:").concat(p2x).concat(",").concat(p2y).concat(",").concat(p2Estado).concat(",").concat(p2Direcao);
     outputString=aux;
   }
   static void EnviaOutputString(){
+    System.out.println(outputString);
     for(int i=0;i<MAXPLAYERS;i++)
       if(Servidor.slot[i]){
         os[i].println(outputString);
