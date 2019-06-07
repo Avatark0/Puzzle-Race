@@ -195,7 +195,7 @@ class Player2 extends Player1{
         direcao = Integer.parseInt(valoresplayers[3]);
         if(direcao==ESQ) direcaoReajuste = 0;
         else direcaoReajuste = descritor[ANDA][LARGURA] - sdifX*2;
-        System.out.println("Player 2: posX: "+posX+", posY: "+posY+", estado: "+estado+", direcao: "+direcao);
+      //  System.out.println("Player 2: posX: "+posX+", posY: "+posY+", estado: "+estado+", direcao: "+direcao);
     }
 
     static void SetSpritePosition(){

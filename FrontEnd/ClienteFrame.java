@@ -18,13 +18,17 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener{
   public static String outputString="0:1:";
   //Janela do jogo
   static JPanel janela;
+  static Menu menu;
+  public static final int MENU = 0;
+  public static final int JOGO = 1;
+  public static int estadoJogo = MENU;
   //CLASSES(OBJETOS DO JOGO)
   int fundo=0;
   Player1 player1=new Player1();
   Player2 player2=new Player2();
   //Cenário (em construção)
   public static int blocosNum=6;//Número de blocos do cenário
-  public static Cenario[] cenario=new Cenario[blocosNum];//Vetor de blocos do cenário
+  //public static Cenario[] cenario=new Cenario[blocosNum];//Vetor de blocos do cenário
   //SpriteSheets de Player1
   BufferedImage[] p1anda = new BufferedImage[Player1.descritor[Player1.ANDA][Player1.NUM]];
   BufferedImage[] p1pula = new BufferedImage[Player1.descritor[Player1.PULA][Player1.NUM]];
@@ -40,7 +44,10 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener{
   //Sprites dos demais objetos
   BufferedImage[] imgCenario=new BufferedImage[2];
   Image[] imgItens=new Image[2];
-  
+  //Menu
+  Button btnJogar = new Button("Jogar");
+  Button btnSair = new Button("Sair");
+
   //JANELA GRAFICA DO CLIENTE: CLASSE INTERNA, GERENCIA AS IMAGENS (passar para classe externa? Quais as vantegens/desvangens de ser uma classe interna?)
   class Janela extends JPanel{
     //Determina propriedades da janela e carrega os sprites.
@@ -98,15 +105,17 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener{
       }
     }
 
+
     //Desenha os componentes na tela.
     public void paintComponent(Graphics g){
       super.paintComponent(g);
       g.drawImage(imgCenario[fundo], 0, 0, getSize().width, getSize().height, this);
       ////////////////////
-      //Atualmente Cenario tem hitbox estática. Será necessário instânciar cada unidade do cenário, ou é possivel armazenar tudo de forma estática?
+      /*/Atualmente Cenario tem hitbox estática. Será necessário instânciar cada unidade do cenário, ou é possivel armazenar tudo de forma estática?
       for(int i=0; i<blocosNum; i++){
         g.drawRect(cenario[i].HitBox().x,cenario[i].HitBox().y,cenario[i].HitBox().width,cenario[i].HitBox().height);
       }
+      */
       ///////////////////
       switch(Player1.estado){
         case Player1.ANDA:g.drawImage(p1anda[Player1.frame], Player1.sposX+Player1.direcaoReajuste, Player1.sposY, Player1.direcao*Player1.descritor[Player1.estado][Player1.LARGURA],Player1.descritor[Player1.estado][Player1.ALTURA],this);break;
@@ -124,25 +133,53 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener{
     }
   }
 
-  //Construtor: instancia a Janela. Onde devem ser definidas as propriedades da janela? Aqui? No contrutor de Janela?
-  ClienteFrame(){
-    super("Cliente do chat");
-    janela=new Janela();//instancia a janela gráfica do jogo
-    //setPreferredSize(new Dimension(800,600));//PreferredSize é chamado duas vezes (aqui e em Janela()). Onde é melhor?
-    add(janela,BorderLayout.CENTER);
-    pack();
-    setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-    setVisible(true);
-    addKeyListener(this);
+
+  class Menu extends JPanel implements ActionListener{
+
+    public void actionPerformed(ActionEvent e) {
+      if(e.getSource() == btnJogar){
+        System.out.println("btn jogar");
+        estadoJogo = JOGO;
+        menu.setVisible(false);
+        janela.setVisible(true);
+      }else if(e.getSource() == btnSair){
+        System.out.println("btn sair");
+        System.exit(0);
+      }
+    }
+
+    Menu(){
+      setPreferredSize(new Dimension(1072, 603));
+      btnJogar.addActionListener(this);
+      btnSair.addActionListener(this);
+      add(btnJogar);
+      add(btnSair);
+     // pack();
+    }
   }
 
-  //Em construção
+  //Construtor: instancia a Janela. Onde devem ser definidas as propriedades da janela? Aqui? No contrutor de Janela?
+  ClienteFrame(){
+    super("PuzzleRace");
+    menu = new Menu();
+    janela=new Janela();//instancia a janela gráfica do jogo
+    add(menu,BorderLayout.NORTH);
+    add(janela,BorderLayout.CENTER);
+    setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+    janela.setVisible(false);
+    menu.setVisible(true);
+    setVisible(true);
+    addKeyListener(this);
+    pack();
+  }
+
+  /*/Em construção
   static void ConstroiCenario(){
     for(int i=0; i<blocosNum; i++){
       cenario[i]=new Cenario(i);
     }
   }
-
+*/
   static boolean keyA=false;
   static boolean keyW=false;
   static boolean keyS=false;
@@ -189,9 +226,10 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener{
 
   //MAIN - INICIA OS THREADS
   public static void main(String[] args){
+
     new Thread(new ClienteFrame()).start();
     new Thread(new GerenteFPS()).start();
-    ConstroiCenario();
+    //ConstroiCenario();
   }
 
   //Faz a conexão e comunicação com o servidor
@@ -245,18 +283,22 @@ class GerenteFPS extends TimerTask{
 
   public synchronized void run(){
     try{
-      //Loop de cada frame
-      while(true){ //mudou, era: while(!Servidor.fecharSala)
-        tempoInicio=System.currentTimeMillis();//Marca o tempo de inicio do frame
-        Player1.ExecutaAcao();
-        Player2.ExecutaAcao();
-        ClienteFrame.janela.repaint();//Atualiza a janela gráfica (pelo cliente)
-        ClienteFrame.SendInputs();//Envia os inputs ao ServidoR
-        //Controle de encerramento do frame:
-        tempoFim=System.currentTimeMillis();//Registra o tempo de encerramento do frame
-        tempoExecucao=tempoFim-tempoInicio;//Calcula o tempo de execução deste frame
-        if(tempoExecucao>tempoIntervalo*1.2)System.out.println("GERENTE_FPS: Frames atrasado! tempoExecucao: "+tempoExecucao+", tempoIntervalo: "+tempoIntervalo);//Notifica caso frame tenha levado mais tempo que o esperado
-        while(System.currentTimeMillis()-tempoInicio<tempoIntervalo)wait(tempoIntervalo-tempoExecucao);//Espera pelo tempo do frame. Está correto?
+      while(true){
+        while(ClienteFrame.estadoJogo==ClienteFrame.MENU){wait(500);System.out.println("wait");}
+        //Loop de cada frame
+        while(ClienteFrame.estadoJogo==ClienteFrame.JOGO){ //mudou, era: while(!Servidor.fecharSala)
+          System.out.println("repaint do gerentefps");
+          tempoInicio=System.currentTimeMillis();//Marca o tempo de inicio do frame
+          Player1.ExecutaAcao();
+          Player2.ExecutaAcao();
+          ClienteFrame.janela.repaint();//Atualiza a janela gráfica (pelo cliente)
+          ClienteFrame.SendInputs();//Envia os inputs ao ServidoR
+          //Controle de encerramento do frame:
+          tempoFim=System.currentTimeMillis();//Registra o tempo de encerramento do frame
+          tempoExecucao=tempoFim-tempoInicio;//Calcula o tempo de execução deste frame
+          if(tempoExecucao>tempoIntervalo*1.2)System.out.println("GERENTE_FPS: Frames atrasado! tempoExecucao: "+tempoExecucao+", tempoIntervalo: "+tempoIntervalo);//Notifica caso frame tenha levado mais tempo que o esperado
+          while(System.currentTimeMillis()-tempoInicio<tempoIntervalo)wait(tempoIntervalo-tempoExecucao);//Espera pelo tempo do frame. Está correto?
+        }
       }
     }catch(IllegalArgumentException erro1){System.err.println("GERENTE_FPS: IllegalArgumentException");}
     catch(IllegalMonitorStateException erro2){System.err.println("GERENTE_FPS: IllegalMonitorStateException");}
