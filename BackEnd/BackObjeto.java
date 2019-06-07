@@ -110,7 +110,7 @@ class Player1 extends BackObjeto{
     /********************************************************************************************************************************/
     //Executa as ações de cada frame, aplicando os inputs e colisões. Também atualiza o frame e estado do Objeto
     public static void ExecutaAcao(String input){
-        System.out.println("Player1: Executa Acao.");
+        //System.out.println("Player1: Executa Acao.");
         Colisoes();//Checagem de colisões. Detecta quais direções estão bloqueadas
         ChecaOciosidade(input);
         SetEstado(input);
@@ -266,7 +266,7 @@ class Player2 extends Player1{
     /********************************************************************************************************************************/
     //Executa as ações de cada frame, aplicando os inputs e colisões. Também atualiza o frame e estado do Objeto
     public static void ExecutaAcao(String input){
-        System.out.println("Player2: Executa Acao.");
+        //System.out.println("Player2: Executa Acao.");
         Colisoes();//Checagem de colisões. Detecta quais direções estão bloqueadas
         ChecaOciosidade(input);
         SetEstado(input);

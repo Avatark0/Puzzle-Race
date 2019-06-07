@@ -12,7 +12,7 @@ import java.awt.image.*;
 public class ClienteFrame extends JFrame implements Runnable, KeyListener{
   //I/O
   static PrintStream os = null;
-  static boolean osSet=false;
+  static boolean osSet=false;//Checa se o cliente já estabeleceu a conexão com o servidor antes de enviar os inputs
   public static long inputCount=0;
   public static String inputLine;
   public static String outputString="0:1:";
@@ -110,13 +110,6 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener{
     public void paintComponent(Graphics g){
       super.paintComponent(g);
       g.drawImage(imgCenario[fundo], 0, 0, getSize().width, getSize().height, this);
-      ////////////////////
-      /*/Atualmente Cenario tem hitbox estática. Será necessário instânciar cada unidade do cenário, ou é possivel armazenar tudo de forma estática?
-      for(int i=0; i<blocosNum; i++){
-        g.drawRect(cenario[i].HitBox().x,cenario[i].HitBox().y,cenario[i].HitBox().width,cenario[i].HitBox().height);
-      }
-      */
-      ///////////////////
       switch(Player1.estado){
         case Player1.ANDA:g.drawImage(p1anda[Player1.frame], Player1.sposX+Player1.direcaoReajuste, Player1.sposY, Player1.direcao*Player1.descritor[Player1.estado][Player1.LARGURA],Player1.descritor[Player1.estado][Player1.ALTURA],this);break;
         case Player1.PULA:g.drawImage(p1pula[Player1.frame], Player1.sposX+Player1.direcaoReajuste, Player1.sposY, Player1.direcao*Player1.descritor[Player1.estado][Player1.LARGURA],Player1.descritor[Player1.estado][Player1.ALTURA],this);break;
@@ -143,8 +136,7 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener{
         menu.setVisible(false);
         janela.setVisible(true);
       }else if(e.getSource() == btnSair){
-        System.out.println("btn sair");
-        System.exit(0);
+        FecharJogo();
       }
     }
 
@@ -154,7 +146,6 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener{
       btnSair.addActionListener(this);
       add(btnJogar);
       add(btnSair);
-     // pack();
     }
   }
 
@@ -171,15 +162,14 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener{
     setVisible(true);
     addKeyListener(this);
     pack();
+    ///////Em construção:
+    addFocusListener(new FocusAdapter() {
+      public void focusGained(FocusEvent foco){
+        if(estadoJogo==JOGO)janela.requestFocusInWindow();
+      }
+    });
   }
-
-  /*/Em construção
-  static void ConstroiCenario(){
-    for(int i=0; i<blocosNum; i++){
-      cenario[i]=new Cenario(i);
-    }
-  }
-*/
+  
   static boolean keyA=false;
   static boolean keyW=false;
   static boolean keyS=false;
@@ -224,12 +214,16 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener{
     Player2.SetInputsRecebidosDoServidor(inputLine);
   }
 
+  void FecharJogo(){
+    os.println(ESCAPE);
+    os.flush();
+  }
+
   //MAIN - INICIA OS THREADS
   public static void main(String[] args){
 
     new Thread(new ClienteFrame()).start();
     new Thread(new GerenteFPS()).start();
-    //ConstroiCenario();
   }
 
   //Faz a conexão e comunicação com o servidor
@@ -238,20 +232,16 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener{
     Scanner is=null;
     //TENTATIVA DE CONEXÃO COM O SERVIDOR
     try{
-      //MUDOU, tiramos esse while 
-        //while(Servidor.salaCheia)Thread.sleep(500);//Intervalo de 0.5 segundos antes de checar o servidor por vagas
       socket=new Socket("127.0.0.1", 80);
       //socket=new Socket("200.145.148.185", 80);
       os=new PrintStream(socket.getOutputStream(), true);
-      osSet=true;
+      osSet=true;//Valida o estado da conexão com o servidor
       is=new Scanner(socket.getInputStream());
     }catch(UnknownHostException e){
       System.err.println("CLIENTE: Don't know about host");
     }catch(IOException e){
       System.err.println("CLIENTE: Couldn't get I/O for the connection to host");
-    }/*catch(InterruptedException e){
-      System.err.println("CLIENTE: Problema em Thread.sleep");
-    } mudou, tiramos esse catch porque nao é necessário, uma vez que comentamos o while*/
+    }
     //CONEXÃO ESTABELECIDA COM SUCESSO
     try{
       //INPUTS DO SERVIDOR - AQUI AS AÇÕES SÃO RECEBIDAS
@@ -284,7 +274,7 @@ class GerenteFPS extends TimerTask{
   public synchronized void run(){
     try{
       while(true){
-        while(ClienteFrame.estadoJogo==ClienteFrame.MENU){wait(500);System.out.println("wait");}
+        while(ClienteFrame.estadoJogo==ClienteFrame.MENU){wait(100);}
         //Loop de cada frame
         while(ClienteFrame.estadoJogo==ClienteFrame.JOGO){ //mudou, era: while(!Servidor.fecharSala)
           System.out.println("repaint do gerentefps");
@@ -303,7 +293,6 @@ class GerenteFPS extends TimerTask{
     }catch(IllegalArgumentException erro1){System.err.println("GERENTE_FPS: IllegalArgumentException");}
     catch(IllegalMonitorStateException erro2){System.err.println("GERENTE_FPS: IllegalMonitorStateException");}
     catch(InterruptedException erro3){System.err.println("GERENTE_FPS: InterruptedException");}
-    //catch(Exception e){System.err.println("GERENTE_FPS: Outro erro");}
   }
 }
 
