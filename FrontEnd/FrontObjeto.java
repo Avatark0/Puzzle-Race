@@ -40,25 +40,7 @@ class Cenario extends FrontObjeto{
     public int posY=0;
     public int sizeX=100;//Tamanho do Objeto
     public int sizeY=100;
-    
-    //Construtor
-    Cenario(int tipo){
-        switch(tipo){
-            case 0:posX=  0;posY=150; break;
-            case 1:posX=100;posY=150; break;
-            case 2:posX=200;posY=250; break;
-            case 3:posX=300;posY=150; break;
-            case 4:posX=100;posY=250; break;
-            case 5:posX=300;posY=250; break;
-        }
-    }
-
-    //Retorna um retângulo com a hitBox do Objeto
-    Rectangle HitBox(){
-        Rectangle hitBox=new Rectangle(posX,posY,sizeX,sizeY);
-        return hitBox;
-    }
-
+    public static int blocosNum=14;
 }
 
 ///////////////////////////////////////////////////////////////////////

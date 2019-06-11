@@ -110,6 +110,31 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener{
     public void paintComponent(Graphics g){
       super.paintComponent(g);
       g.drawImage(imgCenario[fundo], 0, 0, getSize().width, getSize().height, this);
+      for(int i=0; i<Cenario.blocosNum; i++){
+        int posX=0,posY=0,sizeX=0,sizeY=0;
+        switch(i){
+          //Contorno
+          case  0:posX=   0;posY=603-13;sizeX=1072;sizeY= 13;break;//Chão
+          case  1:posX=   0;posY=  0;sizeX=  11;sizeY=603+50;break;//Parede esquerda
+          case  2:posX=1050;posY=  0;sizeX=  11;sizeY=603+50;break;//Parede direita
+          //Altura 1
+          case  3:posX=  11;posY=440;sizeX=  50;sizeY= 50;break;//Escada 1, bloco 1
+          case  4:posX=  61;posY=490;sizeX=  50;sizeY= 50;break;//Escada 1, bloco 2
+          case  5:posX= 111;posY=540;sizeX=  50;sizeY= 50;break;//Escada 1, bloco 3
+          case  6:posX=1010-11;posY=440;sizeX=  50;sizeY= 50;break;//Escada 2, bloco 1
+          case  7:posX= 960-11;posY=490;sizeX=  50;sizeY= 50;break;//Escada 2, bloco 2
+          case  8:posX= 910-11;posY=540;sizeX=  50;sizeY= 50;break;//Escada 2, bloco 3
+          //Altura 2
+          case  9:posX=  90;posY=390;sizeX= 401;sizeY= 10;break;//Plataforma esquerda
+          case 10:posX= 540;posY=390;sizeX= 401;sizeY= 10;break;//Plataforma direita
+          /*/Altura 3
+          case 11:posX= 960;posY=490;sizeX=  50;sizeY= 50;break;//Plataforma esquerda
+          case 12:posX=1010;posY=440;sizeX=  50;sizeY= 50;break;//Plataforma direita
+          case 13:posX= 960;posY=490;sizeX=  50;sizeY= 50;break;//Plataforma esquerda
+          case 14:posX=1010;posY=440;sizeX=  50;sizeY= 50;break;//Plataforma direita//*/
+        }
+        g.drawRect(posX,posY,sizeX,sizeY);
+      }
       switch(Player1.estado){
         case Player1.ANDA:g.drawImage(p1anda[Player1.frame], Player1.sposX+Player1.direcaoReajuste, Player1.sposY, Player1.direcao*Player1.descritor[Player1.estado][Player1.LARGURA],Player1.descritor[Player1.estado][Player1.ALTURA],this);break;
         case Player1.PULA:g.drawImage(p1pula[Player1.frame], Player1.sposX+Player1.direcaoReajuste, Player1.sposY, Player1.direcao*Player1.descritor[Player1.estado][Player1.LARGURA],Player1.descritor[Player1.estado][Player1.ALTURA],this);break;
@@ -162,12 +187,12 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener{
     setVisible(true);
     addKeyListener(this);
     pack();
-    ///////Em construção:
+    /*//////Em construção:
     addFocusListener(new FocusAdapter() {
       public void focusGained(FocusEvent foco){
         if(estadoJogo==JOGO)janela.requestFocusInWindow();
       }
-    });
+    });//*/
   }
   
   static boolean keyA=false;
@@ -277,7 +302,6 @@ class GerenteFPS extends TimerTask{
         while(ClienteFrame.estadoJogo==ClienteFrame.MENU){wait(100);}
         //Loop de cada frame
         while(ClienteFrame.estadoJogo==ClienteFrame.JOGO){ //mudou, era: while(!Servidor.fecharSala)
-          System.out.println("repaint do gerentefps");
           tempoInicio=System.currentTimeMillis();//Marca o tempo de inicio do frame
           Player1.ExecutaAcao();
           Player2.ExecutaAcao();

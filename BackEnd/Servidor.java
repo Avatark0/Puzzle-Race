@@ -73,39 +73,6 @@ class Servidor {
   }
 }
 
-class BackFPS extends TimerTask{
-//Controles de tempo de cada frame
-static long tempoInicio;
-static long tempoFim;
-static long tempoExecucao;
-static long tempoIntervalo=1000/48;//48 frames/s
-
-public synchronized void run(){
-    try{
-      while(!Sala.p1)wait(50);//espera o player1 estar conectado antes de iniciar o loop. Talvez seja melhor instanciar a sala apenas quando ela estiver cheia
-      Sala.SetPlayers();//Define as referências aos players
-      for(int i=0;i<Sala.MAXPLAYERS;i++)
-        Sala.ResetaInputString(i);//Formata as inputStrings dos jogadores. Também é chamado no inicio do recebimento de input de cada jogador (A primeira ocorrência tem sido por lá)
-      while(!Servidor.fecharSala){
-        tempoInicio=System.currentTimeMillis();//Marca o tempo de início do frame
-        Sala.ExecutaInputs(Sala.inputString[0], 0);//0 tem q ser substituido pelo número do player. Caso sejam mais que dois será melhor usar um "for"
-        Sala.ResetaInputString(0);
-        Sala.ExecutaInputs(Sala.inputString[1], 1);
-        Sala.ResetaInputString(1);
-        Sala.AtualizaOutputString();
-        Sala.EnviaOutputString();
-        tempoFim=System.currentTimeMillis();//Registra o tempo de encerramento do frame
-        tempoExecucao=tempoFim-tempoInicio;//Calcula o tempo de execução deste frame
-        if(tempoExecucao>tempoIntervalo*1.1)System.out.println("BACK_FPS: Frames atrasado! tempoExecucao: "+tempoExecucao+", tempoIntervalo: "+tempoIntervalo);//Notifica caso frame tenha levado mais tempo que o esperado
-        while(System.currentTimeMillis()-tempoInicio<tempoIntervalo)wait(tempoIntervalo-tempoExecucao);//Espera pelo tempo do frame. Está correto?
-      }
-    }catch(IllegalArgumentException erro1){System.err.println("BACK_FPS: IllegalArgumentException");}
-    catch(IllegalMonitorStateException erro2){System.err.println("BACK_FPS: IllegalMonitorStateException");}
-    catch(InterruptedException erro3){System.err.println("BACK_FPS: InterruptedException");}
-    //catch(Exception e){System.err.println("BACK_FPS: Outro erro");}
-  }
-}
-
 //A SALA
 class Sala extends Thread{
   Socket clientSocket=null;
@@ -117,14 +84,13 @@ class Sala extends Thread{
   static String outputString;
   static boolean p1=false;
   static boolean p2=false;
-  public static int blocosNum=6;//Número de blocos do cenário
-  public static Cenario[] cenario=new Cenario[blocosNum];//Vetor de blocos do cenário
+  public static Cenario[] cenario=new Cenario[Cenario.blocosNum];//Vetor de blocos do cenário
 
   Sala(Socket clientSocket){
     this.clientSocket=clientSocket;
   }
   void setCenario(){
-    for(int i=0;i<6;i++){
+    for(int i=0;i<Cenario.blocosNum;i++){
       cenario[i]=new Cenario(i);
     }
   }
@@ -133,8 +99,6 @@ class Sala extends Thread{
     playerArray[1]=new Player2();  
   }
   static void ExecutaInputs(String input, int player){
-    System.out.println("SALA: player="+player+", input="+input);
-    //playerArray[player].ExecutaAcao(input);//Apenas ação do Player1 está sendo chamada (por ambos os players)
     if(player==0)Player1.ExecutaAcao(input);
     else if(player==1)Player2.ExecutaAcao(input);
   }
@@ -221,6 +185,40 @@ class Sala extends Thread{
     }catch(StringIndexOutOfBoundsException e){
       System.err.println("SALA: StringIndexOutOfBoundsException");
     }
+  }
+}
+
+//Controle de FPS do Servidor
+class BackFPS extends TimerTask{
+  //Controles de tempo de cada frame
+  static long tempoInicio;
+  static long tempoFim;
+  static long tempoExecucao;
+  static long tempoIntervalo=1000/48;//48 frames/s
+  
+  public synchronized void run(){
+    try{
+      while(!Sala.p1)wait(50);//espera o player1 estar conectado antes de iniciar o loop. Talvez seja melhor instanciar a sala apenas quando ela estiver cheia
+      Sala.SetPlayers();//Define as referências aos players
+      for(int i=0;i<Sala.MAXPLAYERS;i++)
+        Sala.ResetaInputString(i);//Formata as inputStrings dos jogadores. Também é chamado no inicio do recebimento de input de cada jogador (A primeira ocorrência tem sido por lá)
+      while(!Servidor.fecharSala){
+        tempoInicio=System.currentTimeMillis();//Marca o tempo de início do frame
+        Sala.ExecutaInputs(Sala.inputString[0], 0);//0 tem q ser substituido pelo número do player. Caso sejam mais que dois será melhor usar um "for"
+        Sala.ResetaInputString(0);
+        Sala.ExecutaInputs(Sala.inputString[1], 1);
+        Sala.ResetaInputString(1);
+        Sala.AtualizaOutputString();
+        Sala.EnviaOutputString();
+        tempoFim=System.currentTimeMillis();//Registra o tempo de encerramento do frame
+        tempoExecucao=tempoFim-tempoInicio;//Calcula o tempo de execução deste frame
+        if(tempoExecucao>tempoIntervalo*1.1)System.out.println("BACK_FPS: Frames atrasado! tempoExecucao: "+tempoExecucao+", tempoIntervalo: "+tempoIntervalo);//Notifica caso frame tenha levado mais tempo que o esperado
+        while(System.currentTimeMillis()-tempoInicio<tempoIntervalo)wait(tempoIntervalo-tempoExecucao);//Espera pelo tempo do frame. Está correto?
+      }
+    }catch(IllegalArgumentException erro1){System.err.println("BACK_FPS: IllegalArgumentException");}
+    catch(IllegalMonitorStateException erro2){System.err.println("BACK_FPS: IllegalMonitorStateException");}
+    catch(InterruptedException erro3){System.err.println("BACK_FPS: InterruptedException");}
+    //catch(Exception e){System.err.println("BACK_FPS: Outro erro");}
   }
 }
 /*
