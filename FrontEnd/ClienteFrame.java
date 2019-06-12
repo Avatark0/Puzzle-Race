@@ -9,7 +9,7 @@ import java.awt.image.*;
 
 //Classes: ClienteFrame, GerenteFPS.
 
-public class ClienteFrame extends JFrame implements Runnable, KeyListener{
+public class ClienteFrame extends JFrame implements Runnable, KeyListener, ActionListener{
   //I/O
   static PrintStream os = null;
   static boolean osSet=false;//Checa se o cliente já estabeleceu a conexão com o servidor antes de enviar os inputs
@@ -18,9 +18,10 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener{
   public static String outputString="0:1:";
   //Janela do jogo
   static JPanel janela;
-  static Menu menu;
+  static JPanel menu;
   public static final int MENU = 0;
   public static final int JOGO = 1;
+  public static int VITORIA = -1;
   public static int estadoJogo = MENU;
   //CLASSES(OBJETOS DO JOGO)
   int fundo=0;
@@ -44,6 +45,7 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener{
   //Sprites dos demais objetos
   BufferedImage[] imgCenario=new BufferedImage[2];
   Image[] imgItens=new Image[2];
+  BufferedImage[] imgFim= new BufferedImage[2];
   //Menu
   Button btnJogar = new Button("Jogar");
   Button btnSair = new Button("Sair");
@@ -53,10 +55,10 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener{
     //Determina propriedades da janela e carrega os sprites.
     Janela(){
       try{
-        setPreferredSize(new Dimension(1072, 603));
         imgCenario[0]=ImageIO.read(new File("fundo.jpeg"));
         imgCenario[1]=ImageIO.read(new File("fundo2.jpeg"));
-        
+        imgFim[0] = ImageIO.read(new File("vitoria1.png"));
+        imgFim[1] = ImageIO.read(new File("vitoria2.png"));
         //P1
         for(int row=0;row<Player1.descritor[Player1.ANDA][Player1.ROWS];row++)
           for(int col=0;col<Player1.descritor[Player1.ANDA][Player1.COLS];col++)
@@ -147,45 +149,29 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener{
         case Player2.CAI:g.drawImage(p2cai[Player2.frame], Player2.sposX+Player2.direcaoReajuste, Player2.sposY, Player2.direcao*Player2.descritor[Player2.estado][Player2.LARGURA],Player2.descritor[Player2.estado][Player2.ALTURA],this);break;
         case Player2.PARADO:g.drawImage(p2PARADO[Player2.frame], Player2.sposX+Player2.direcaoReajuste, Player2.sposY, Player2.direcao*Player2.descritor[Player2.estado][Player2.LARGURA],Player2.descritor[Player2.estado][Player2.ALTURA],this);break;
       }
+      if(VITORIA != -1)
+        g.drawImage(imgFim[VITORIA], 0, 0, getSize().width, getSize().height, this);
       Toolkit.getDefaultToolkit().sync();
-    }
-  }
-
-
-  class Menu extends JPanel implements ActionListener{
-
-    public void actionPerformed(ActionEvent e) {
-      if(e.getSource() == btnJogar){
-        System.out.println("btn jogar");
-        estadoJogo = JOGO;
-        menu.setVisible(false);
-        janela.setVisible(true);
-      }else if(e.getSource() == btnSair){
-        FecharJogo();
-      }
-    }
-
-    Menu(){
-      setPreferredSize(new Dimension(1072, 603));
-      btnJogar.addActionListener(this);
-      btnSair.addActionListener(this);
-      add(btnJogar);
-      add(btnSair);
     }
   }
 
   //Construtor: instancia a Janela. Onde devem ser definidas as propriedades da janela? Aqui? No contrutor de Janela?
   ClienteFrame(){
     super("PuzzleRace");
-    menu = new Menu();
+    setPreferredSize(new Dimension(1080, 650));
+    menu = new JPanel();
+    btnJogar.addActionListener(this);
+    btnSair.addActionListener(this);
+    menu.add(btnJogar);
+    menu.add(btnSair);
+    add(menu, BorderLayout.NORTH);
     janela=new Janela();//instancia a janela gráfica do jogo
-    add(menu,BorderLayout.NORTH);
-    add(janela,BorderLayout.CENTER);
-    setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+    add(janela, BorderLayout.CENTER);
     janela.setVisible(false);
     menu.setVisible(true);
-    setVisible(true);
     addKeyListener(this);
+    setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+    setVisible(true);
     pack();
     /*//////Em construção:
     addFocusListener(new FocusAdapter() {
@@ -201,6 +187,19 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener{
   static boolean keyD=false;
   static boolean keySpace=false;
   char ESCAPE=(char)(27);
+  
+  public void actionPerformed(ActionEvent e) {
+    if(e.getSource() == btnJogar){
+      System.out.println("btn jogar");
+      estadoJogo = JOGO;
+      menu.setVisible(false);
+      janela.setVisible(true);
+      requestFocus();
+    }else if(e.getSource() == btnSair){
+      FecharJogo();
+    }
+  }
+
   //EVENTOS DO CLIENTE (os inputs do jogador)
   public synchronized void keyPressed(KeyEvent e){//Como reconhecer imputs compostos? (pulo+a, shif+a, etc) eles são recebidos separadamente. Como lidar com o shift? - pressed e released.
     char key=e.getKeyChar();
@@ -257,8 +256,8 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener{
     Scanner is=null;
     //TENTATIVA DE CONEXÃO COM O SERVIDOR
     try{
-      socket=new Socket("127.0.0.1", 80);
-      //socket=new Socket("200.145.148.185", 80);
+      //socket=new Socket("127.0.0.1", 80);
+      socket=new Socket("200.145.148.186", 80);
       os=new PrintStream(socket.getOutputStream(), true);
       osSet=true;//Valida o estado da conexão com o servidor
       is=new Scanner(socket.getInputStream());
@@ -272,7 +271,11 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener{
       //INPUTS DO SERVIDOR - AQUI AS AÇÕES SÃO RECEBIDAS
       do {
         inputLine=is.nextLine();//O input recebido pelo servidor
-        if(!inputLine.equals("::"))AplicaInputsRecebidosDoServidor(inputLine);
+        if(inputLine.contains("VITORIA:")){
+          if(inputLine.contains("0")) VITORIA = 0;
+          if(inputLine.contains("1")) VITORIA = 1;
+        }
+        else if(!inputLine.equals("::"))AplicaInputsRecebidosDoServidor(inputLine);
       }while(!inputLine.equals("::"));//Comando de encerramento da conexão pelo cliente
       //CONEXÃO ENCERRADA
       os.close();

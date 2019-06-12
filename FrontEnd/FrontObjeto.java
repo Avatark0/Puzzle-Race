@@ -111,7 +111,7 @@ class Player1 extends FrontObjeto{
         descritor[PULA][ALTURA] = 155;
         descritor[PULA][COLS] = 6;
         descritor[PULA][ROWS] = 9;
-        descritor[PULA][NUM] = 20;//Ajustado para reduzir uso de memória, valor real é 51
+        descritor[PULA][NUM] = 7;//Ajustado para reduzir uso de memória, valor real é 51
         //CAI
         descritor[CAI][LARGURA] = 164;
         descritor[CAI][ALTURA] = 155;
@@ -200,7 +200,7 @@ class Player2 extends Player1{
         descritor[PULA][ALTURA] = 141;
         descritor[PULA][COLS] = 8;
         descritor[PULA][ROWS] = 7;
-        descritor[PULA][NUM] = 10;//Ajustado para reduzir uso de memória, valor real é 51
+        descritor[PULA][NUM] = 7;//Ajustado para reduzir uso de memória, valor real é 51
         //CAI
         descritor[CAI][LARGURA] = 124;
         descritor[CAI][ALTURA] = 141;
