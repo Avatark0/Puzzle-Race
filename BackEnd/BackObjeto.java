@@ -87,49 +87,65 @@ class Player1 extends BackObjeto{
     static final int pathBlockedIndexEsq=2;//ESQUERDA
     static final int pathBlockedIndexBai=3;//BAIXO
     //Idênticas na inicialização entre Players:
+    /*****************************************/
+    //Controles de posição e estado
     public static int sizeX = 20;//Tamanho do Player
     public static int sizeY = 75;
     public static int estado = PARADO;//O estado (ação) do Player
+    public static int estadoAnterior = PARADO;//O estado anterior do Player
+    public static int frameIntervalCount=0;//Contagem de frames das ações
     public static int framePARADOIntervalCount=0;//Controle especial do estado PARADO (checagem de frames de ociosidade)
     public static int direcao=ESQ;//Direção do Player
-    public static int velX=5;
-    public static int acelX=0;
+    //Controles de velocidade
+    public static int velX=0;
     public static int velY=0;
-    public static int acelY=0;
-    public static int maxVelY=10;
-    public static int aumentoAcelVertPulo=4;//Ganho de aceleração vertical ao pular. (acessado pelo estado PULA em SetEstado)
+    public static int maxVelX=5;
+    public static int maxVelY=4;
+    public static int duracaoPulo=0;
+    public static boolean temPulo=true;
     //Executa as ações de cada frame, aplicando os inputs e colisões. Também atualiza o frame e estado do Objeto
     public static void ExecutaAcao(String input){
         Colisoes();//Checagem de colisões. Detecta quais direções estão bloqueadas
         ChecaOciosidade(input);//Conta os frames ociosos (parados), e muda o estado para parado caso necessário
-        SetPosition(input);
         SetEstado(input);
+        SetVelocidade(input);
+        SetPosition();
     }
-    //Controla os ajustes de posição, a partir dos inputs recebidos, aceleração e colisões
-    static void SetPosition(String mov){
-        //Movimento Horizontal:
-        velX+=acelX;
-        if((mov.contains("a")||mov.contains("A")) && !pathBlocked[pathBlockedIndexEsq]){posX-=velX;}
-        if((mov.contains("d")||mov.contains("D")) && !pathBlocked[pathBlockedIndexDir]){posX+=velX;}
-        //Movimento Vertical:
-        if(mov.contains(" ")&&acelY==0){acelY=aumentoAcelVertPulo;}//Caso não esteja pulando nem caindo, e receba o input de pular, pula
-        if(velY<maxVelY)velY+=acelY;
-        if(acelY>0){
-            acelY--;
-            if(!pathBlocked[pathBlockedIndexCim]){posY-=velY;}
+    //Ajustes a posição, a partir da velocidade e colisões
+    static void SetPosition(){
+        if(velX<0&&!pathBlocked[pathBlockedIndexEsq]){posX+=velX;}
+        if(velX>0&&!pathBlocked[pathBlockedIndexDir]){posX+=velX;}
+        if(velY<0&&!pathBlocked[pathBlockedIndexCim]){posY+=velY;}
+        if(velY>0&&!pathBlocked[pathBlockedIndexBai]){posY+=velY;}
+    }
+    static void SetVelocidade(String input){
+        frameIntervalCount++;
+        if(estadoAnterior!=estado){frameIntervalCount=0;System.out.println("Player1: frameCount=0");}
+        if(input.contains("d")||input.contains("D")){
+            if(velX<0)velX=-1;
+            if(velX<maxVelX)velX++;
         }
-        else if(!pathBlocked[pathBlockedIndexBai]){
-            posY-=velY;
-            if(velY>-maxVelY)velY--;
+        else if(velX>0)velX--;
+        if(input.contains("a")||input.contains("A")){
+            if(velX>0)velX=1;
+            if(velX>-maxVelX)velX--;
         }
-        else{velY=0;acelY=0;}
-        if(mov.contains("s")||mov.contains("S")){posY+=1;}
-        if(mov.contains("w")||mov.contains("W")){posY-=1;}
+        else if(velX<0)velX++;
+        if(estado==PULA){
+            if(estadoAnterior!=estado){duracaoPulo=24;}
+            if(duracaoPulo>0)velY=-(duracaoPulo/2)-2;
+            duracaoPulo--;
+        }
+        if(velY<maxVelY&&!pathBlocked[pathBlockedIndexBai])velY++;
+        else if(pathBlocked[pathBlockedIndexBai])velY=0;
+        if(input.contains("s")||input.contains("S")){posY+=1;}
+        if(input.contains("w")||input.contains("W")){posY-=1;}
     }
     //Define o estado (ação) do Objeto, a partir dos inputs e colisões
     static void SetEstado(String input){
-        if(velY==-maxVelY)estado=CAI;//Caso não esteja pulando e não esteja sobre chão, o estado é CAI
-        else if(velY!=0||(velY==0&&!pathBlocked[pathBlockedIndexBai]))estado=PULA;//Caso esteja com aceleração vertical positiva, o estado é PULA
+        estadoAnterior=estado;
+        if(velY==maxVelY)estado=CAI;//Caso esteja na velocidade limite de queda o estado é CAI
+        else if((input.contains(" ")&&temPulo)||(estado==PULA&&!temPulo)){estado=PULA;temPulo=false;}//Controle de pulo pela variável temPulo, resetada ao tocar no chão
         else if(input.contains("w")||input.contains("W")||input.contains("s")||input.contains("S")){estado=ANDA;}//Caso escadas e cordas sejam adicionadas, este estado será referente a elas
         else if(input.contains("a")||input.contains("A")||input.contains("d")||input.contains("D")){//Caso não esteja pulando nem caindo, e receba o input, anda
             estado=ANDA;
@@ -141,7 +157,7 @@ class Player1 extends BackObjeto{
     static void ChecaOciosidade(String input){
         if(input.isEmpty())framePARADOIntervalCount++;//Conta os frames que Player não recebeu nenhum input
         else framePARADOIntervalCount=0;//Caso Player receba algum input, reseta a contagem de frames sem input
-        if(framePARADOIntervalCount>=(1000/48)&&estado!=CAI)estado=PARADO;//Caso Player não tenha recebido nenhum input por 12 frames (0.5s), muda seu estado para PARADO
+        if(framePARADOIntervalCount>=(12)&&estado!=CAI)estado=PARADO;//Caso Player não tenha recebido nenhum input por 12 frames (0.5s), muda seu estado para PARADO
     }
     //Retorna um retângulo com a hitBox do Objeto
     static Rectangle HitBox(){
@@ -168,6 +184,7 @@ class Player1 extends BackObjeto{
                 }
             }
         }
+        if(pathBlocked[pathBlockedIndexBai])temPulo=true;//Reset da variável temPulo, utilizada no controle do estado PULA
         /*referências cruzadas entre os Players*/ 
         if(HitBox().intersects(Player2.HitBox())){
             float relX=posX-Player2.posX;
@@ -246,7 +263,7 @@ class Player2 extends Player1{
     static void ChecaOciosidade(String input){
         if(input.isEmpty())framePARADOIntervalCount++;//Conta os frames que Player não recebeu nenhum input
         else framePARADOIntervalCount=0;//Caso Player receba algum input, reseta a contagem de frames sem input
-        if(framePARADOIntervalCount>=(1000/48)&&estado!=CAI)estado=PARADO;//Caso Player não tenha recebido nenhum input por 12 frames (0.5s), muda seu estado para PARADO
+        if(framePARADOIntervalCount>=12&&estado!=CAI)estado=PARADO;//Caso Player não tenha recebido nenhum input por 12 frames (0.5s), muda seu estado para PARADO
     }
     //Retorna um retângulo com a hitBox do Objeto
     static Rectangle HitBox(){
