@@ -98,6 +98,20 @@ class Sala extends Thread{
     playerArray[0]=new Player1();
     playerArray[1]=new Player2();  
   }
+  static synchronized void EncerraPartida(int PlayerVencedor){
+    String stringVitoria="";
+    if(PlayerVencedor==0){
+      stringVitoria="VITORIA:0";
+    }
+    else if(PlayerVencedor==1){
+      stringVitoria="VITORIA:1";
+    }
+    for(int i=0;i<MAXPLAYERS;i++)
+      if(Servidor.slot[i]){
+        os[i].println(stringVitoria);
+        os[i].flush();
+      }
+  }
   static void ExecutaInputs(String input, int player){
     if(player==0)Player1.ExecutaAcao(input);
     else if(player==1)Player2.ExecutaAcao(input);
@@ -119,7 +133,7 @@ class Sala extends Thread{
     outputString=aux;
   }
   static void EnviaOutputString(){
-    System.out.println("SALA: outputString="+outputString);
+    //System.out.println("SALA: outputString="+outputString);
     for(int i=0;i<MAXPLAYERS;i++)
       if(Servidor.slot[i]){
         os[i].println(outputString);
@@ -138,7 +152,6 @@ class Sala extends Thread{
           if(slotNumber==0)setCenario();//Cria o cenario físico. Associado à conexão do player1. Seria melhor associar ao inicio da partida (preenchimento da sala)
           switch(i){
             case 0: p1=true; break;
-            
           }
           Servidor.OcupaSlot(slotNumber);
           cont++;
