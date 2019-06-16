@@ -116,19 +116,17 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener, Actio
         int posX=0,posY=0,sizeX=0,sizeY=0;
         switch(i){
           //Contorno
-          case  0:posX=   0;posY=603-13;sizeX=1072;sizeY= 13;break;//Chão
-          case  1:posX=   0;posY=  0;sizeX=  11;sizeY=603+50;break;//Parede esquerda
-          case  2:posX=1050;posY=  0;sizeX=  11;sizeY=603+50;break;//Parede direita
+          case  0:posX=   0;posY=630;sizeX=1080;sizeY= 20;break;//Chão
+          case  1:posX=   0;posY=-50;sizeX=  20;sizeY=700;break;//Parede esquerda
+          case  2:posX=1060;posY=-50;sizeX=  20;sizeY=700;break;//Parede direita
           //Altura 1
-          case  3:posX=  11;posY=440;sizeX=  50;sizeY= 50;break;//Escada 1, bloco 1
-          case  4:posX=  61;posY=490;sizeX=  50;sizeY= 50;break;//Escada 1, bloco 2
-          case  5:posX= 111;posY=540;sizeX=  50;sizeY= 50;break;//Escada 1, bloco 3
-          case  6:posX=1010-11;posY=440;sizeX=  50;sizeY= 50;break;//Escada 2, bloco 1
-          case  7:posX= 960-11;posY=490;sizeX=  50;sizeY= 50;break;//Escada 2, bloco 2
-          case  8:posX= 910-11;posY=540;sizeX=  50;sizeY= 50;break;//Escada 2, bloco 3
+          case  3:posX=  20;posY=430;sizeX=  50;sizeY= 50;break;//Escada 1, bloco 1
+          case  4:posX=  70;posY=480;sizeX=  50;sizeY= 50;break;//Escada 1, bloco 2
+          case  5:posX= 120;posY=530;sizeX=  50;sizeY= 50;break;//Escada 1, bloco 3
+          case  6:posX= 170;posY=580;sizeX=  50;sizeY= 50;break;//Escada 1, bloco 4
           //Altura 2
-          case  9:posX=  90;posY=390;sizeX= 401;sizeY= 10;break;//Plataforma esquerda
-          case 10:posX= 540;posY=390;sizeX= 401;sizeY= 10;break;//Plataforma direita
+          case  7:posX= 120;posY=390;sizeX= 401;sizeY= 10;break;//Plataforma esquerda
+          case  8:posX= 570;posY=390;sizeX= 401;sizeY= 10;break;//Plataforma direita
           /*/Altura 3
           case 11:posX= 960;posY=490;sizeX=  50;sizeY= 50;break;//Plataforma esquerda
           case 12:posX=1010;posY=440;sizeX=  50;sizeY= 50;break;//Plataforma direita
@@ -155,10 +153,10 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener, Actio
     }
   }
 
-  //Construtor: instancia a Janela. Onde devem ser definidas as propriedades da janela? Aqui? No contrutor de Janela?
+  //Construtor: instancia a Janela.
   ClienteFrame(){
     super("PuzzleRace");
-    setPreferredSize(new Dimension(1080, 650));
+    setPreferredSize(new Dimension(1098, 680));//1080+18;650+30
     menu = new JPanel();
     btnJogar.addActionListener(this);
     btnSair.addActionListener(this);
@@ -231,7 +229,7 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener, Actio
   }
   //Atualiza as posições dos Players de acordo com a inputLine
   static void AplicaInputsRecebidosDoServidor(String inputLine){
-    /*formato de inputLine = 0:player1posX,player1posY,player1estado,player1direcao.1:player2posX,player2posY,player2estado,player2direcao*/
+    /*formato de inputLine = I:playerIposX,playerIposY,playerIestado,playerIdirecao.I.*/
     if(inputLine.contains("0:"))Player1.SetInputsRecebidosDoServidor(inputLine);
     if(inputLine.contains("1:"))Player2.SetInputsRecebidosDoServidor(inputLine);
   }
