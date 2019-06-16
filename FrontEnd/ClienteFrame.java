@@ -120,19 +120,29 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener, Actio
           case  0:posX=   0;posY=630;sizeX=1080;sizeY= 20;break;//Chão
           case  1:posX=   0;posY=-50;sizeX=  20;sizeY=700;break;//Parede esquerda
           case  2:posX=1060;posY=-50;sizeX=  20;sizeY=700;break;//Parede direita
-          //Altura 1
+          //Escada 1
           case  3:posX=  20;posY=430;sizeX=  50;sizeY= 50;break;//Escada 1, bloco 1
           case  4:posX=  70;posY=480;sizeX=  50;sizeY= 50;break;//Escada 1, bloco 2
           case  5:posX= 120;posY=530;sizeX=  50;sizeY= 50;break;//Escada 1, bloco 3
           case  6:posX= 170;posY=580;sizeX=  50;sizeY= 50;break;//Escada 1, bloco 4
-          //Altura 2
-          case  7:posX= 120;posY=390;sizeX= 401;sizeY= 10;break;//Plataforma esquerda
-          case  8:posX= 570;posY=390;sizeX= 401;sizeY= 10;break;//Plataforma direita
-          /*/Altura 3
-          case 11:posX= 960;posY=490;sizeX=  50;sizeY= 50;break;//Plataforma esquerda
-          case 12:posX=1010;posY=440;sizeX=  50;sizeY= 50;break;//Plataforma direita
-          case 13:posX= 960;posY=490;sizeX=  50;sizeY= 50;break;//Plataforma esquerda
-          case 14:posX=1010;posY=440;sizeX=  50;sizeY= 50;break;//Plataforma direita//*/
+          //Corredor 2
+          case  7:posX= 150;posY=410;sizeX= 360;sizeY= 10;break;//Plataforma esquerda
+          case  8:posX= 570;posY=430;sizeX= 240;sizeY= 10;break;//Plataforma direita
+          case  9:posX= 860;posY=490;sizeX= 100;sizeY= 10;break;//Plataforma esquerda
+          //Escada 3
+          case 10:posX=1000;posY=420;sizeX=  60;sizeY= 50;break;//Plataforma direita
+          case 11:posX=1030;posY=370;sizeX=  30;sizeY= 50;break;//Plataforma esquerda
+          case 12:posX= 860;posY=490;sizeX= 100;sizeY= 10;break;//Plataforma direita
+          //Plataformas 4
+          case 13:posX= 860;posY=490;sizeX= 100;sizeY= 10;break;//Plataforma esquerda
+          case 14:posX= 860;posY=490;sizeX= 100;sizeY= 10;break;//Plataforma direita
+          case 15:posX= 860;posY=490;sizeX= 100;sizeY= 10;break;//Plataforma esquerda
+          case 16:posX= 860;posY=490;sizeX= 100;sizeY= 10;break;//Plataforma direita
+          //Desafio final 5
+          case 17:posX= 860;posY=490;sizeX= 100;sizeY= 10;break;//Plataforma esquerda
+          case 18:posX= 860;posY=490;sizeX= 100;sizeY= 10;break;//Plataforma direita
+          case 19:posX= 860;posY=490;sizeX= 100;sizeY= 10;break;//Plataforma esquerda
+          //*/
         }
         g.drawRect(posX,posY,sizeX,sizeY);
       }
@@ -296,7 +306,7 @@ class GerenteFPS extends TimerTask{
   static long tempoInicio;
   static long tempoFim=0;
   static long tempoExecucao=0;
-  static long tempoIntervalo=1000/24;//24 frames/s
+  static long tempoIntervalo=1000/48;//48 frames/s (valor dobrado para tentar otimizar o processamento do servidor)
 
   public synchronized void run(){
     try{

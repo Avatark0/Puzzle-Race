@@ -83,6 +83,7 @@ class Sala extends Thread{
   static boolean[] jogadorPronto=new boolean[MAXPLAYERS];//Controle dos jogadores. Quando o jogador clica no botão jogar, seu valor vira "true"
   static boolean salaPronta=false;//Controle da Sala. Quando todos os jogadores estiverem prontos seu valor vira "true"
   static Cenario[] cenario=new Cenario[Cenario.blocosNum];//Array de blocos do cenário
+  static Player1[] jogador=new Player1[MAXPLAYERS];
   public int slotNumber=0;//Número do slot de conexão do jogador com a Sala. Identifica os jogadores
   //Construtor. Atribui a conexão do clienteSocket, faz a reserva e contagem de vagas da Sala e inicializa as variáveis do jogador
   Sala(Socket clientSocket){
@@ -98,6 +99,8 @@ class Sala extends Thread{
     //Inicializa as variáveis do jogador
     jogadorPronto[slotNumber]=false;
     inputString[slotNumber]="";
+    jogador[slotNumber]=new Player1();
+    jogador[slotNumber].slotNumber=slotNumber;
   }
   //Instancia o Cenário da partida. É chamado junto com a instanciação do BackFPS (Antes das posições e ações dos jogadores serem computadas)
   void setCenario(){
@@ -123,8 +126,8 @@ class Sala extends Thread{
   //Chama as funções de cálculo dos inputs de cada jogador
   static void ExecutaInputs(String input, int player){
     switch(player){
-      case 0: Player1.ExecutaAcao(input);break;
-      case 1: Player2.ExecutaAcao(input);break;
+      case 0: jogador[0].ExecutaAcao(input);break;
+      case 1: jogador[1].ExecutaAcao(input);break;
     }
   }
   //Utilizado pelo BackFPS para resetar a inputString do jogador entre frames
@@ -133,17 +136,14 @@ class Sala extends Thread{
   }
   //Checa as posições dos Jogadores e atualiza os valores na outputString
   static void AtualizaOutputString(){
-    String p1x=String.valueOf(Player1.posX);
-    String p1y=String.valueOf(Player1.posY);
-    String p1Estado=String.valueOf(Player1.estado);
-    String p1Direcao=String.valueOf(Player1.direcao);
-    String p2x=String.valueOf(Player2.posX);
-    String p2y=String.valueOf(Player2.posY);
-    String p2Estado=String.valueOf(Player2.estado);
-    String p2Direcao=String.valueOf(Player2.direcao);
     String aux="";
-    aux=aux.concat("0:").concat(p1x).concat(",").concat(p1y).concat(",").concat(p1Estado).concat(",").concat(p1Direcao).concat(".0.");
-    aux=aux.concat("1:").concat(p2x).concat(",").concat(p2y).concat(",").concat(p2Estado).concat(",").concat(p2Direcao).concat(".1.");
+    for(int i=0;i<MAXPLAYERS;i++){
+      String posX=String.valueOf(jogador[i].posX);
+      String posY=String.valueOf(jogador[i].posY);
+      String estado=String.valueOf(jogador[i].estado);
+      String direcao=String.valueOf(jogador[i].direcao);
+      aux=aux.concat(i+":").concat(posX).concat(",").concat(posY).concat(",").concat(estado).concat(",").concat(direcao).concat("."+i+".");
+    }
     outputString=aux;
   }
   //Envia a outputString completa para todos os jogadores
@@ -221,12 +221,12 @@ class Sala extends Thread{
     static long tempoInicio;
     static long tempoFim;
     static long tempoExecucao;
-    static long tempoIntervalo=1000/48;//48 frames/s
+    static long tempoIntervalo=1000/24;//24 frames/s (valor reduzido para metado do FPS do frontEnd. Isto elimina inputs "mortos")
     
     public synchronized void run(){
       System.out.println("BackFPS iniciado!");
       try{
-        while(!salaPronta)wait(100);//espera o player1 estar conectado antes de iniciar o loop. Talvez seja melhor instanciar a sala apenas quando ela estiver cheia
+        while(!salaPronta)wait(100);//espera todos os jogadores estarem prontos (clicarem no bt jogar) antes de iniciar o loop de jogo.
         while(!Servidor.fecharSala){
           tempoInicio=System.currentTimeMillis();//Marca o tempo de início do frame
           for(int i=0;i<MAXPLAYERS;i++){

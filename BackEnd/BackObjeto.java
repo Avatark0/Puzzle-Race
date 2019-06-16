@@ -7,7 +7,7 @@ import java.util.*;
 import javax.imageio.*;
 import java.awt.image.*;
 
-//Classes: Objeto, Vitoria, Cenario, Player1, Player2.
+//Classes: Objeto, Vitoria, Cenario, Player1.
 
 public class BackObjeto extends JFrame{
     final static int PROP_INDEX_SIZE = 5;//Número de propriedades para cropar a spriteSheet e acessar os sprites individuais
@@ -16,19 +16,25 @@ public class BackObjeto extends JFrame{
         final static int COLS = 2;
         final static int ROWS = 3;
         final static int NUM = 4;
-    final static int ESTADO_INDEX_SIZE = 5;//Número de estados do Player
-        final static int ANDA = 0;//Index dos estados do Player
+    final static int ESTADO_INDEX_SIZE = 5;//Número de estados do jogador
+        final static int ANDA = 0;//Index dos estados do jogador
         final static int CORRE = 1;
         final static int PULA = 2;
         final static int CAI = 3;
         final static int PARADO = 4;
-    final public static int DIR=-1;//Index das direções do Player
-    final public static int ESQ=1;
+    //Index das direções do jogador
+    final static int DIR=-1;
+    final static int ESQ=1;
+    //Index das direções bloqueadas
+    final static int pathBlockedIndexDir=0;//DIREITA
+    final static int pathBlockedIndexCim=1;//CIMA
+    final static int pathBlockedIndexEsq=2;//ESQUERDA
+    final static int pathBlockedIndexBai=3;//BAIXO
 }
 
 class Vitoria extends BackObjeto{
-    public static int posX=500;//Posição da hitBox (0,0 = canto esquerdo superior)
-    public static int posY=300;
+    public static int posX=10;//Posição da hitBox (0,0 = canto esquerdo superior)
+    public static int posY=10;
     public static int sizeX=30;//Tamanho do Objeto
     public static int sizeY=50;
     //Retorna um retângulo com a hitBox do Objeto
@@ -41,7 +47,7 @@ class Vitoria extends BackObjeto{
 //As instâncias desta classe compõe o cenário lógico do jogo
 class Cenario extends BackObjeto{
     //Numero de blocos da fase
-    public static int blocosNum=14;
+    public static int blocosNum=20;
     //Variáveis de controle do Cenario
     public int posX=0;//Posição da hitBox (0,0 = canto esquerdo superior)
     public int posY=0;
@@ -56,19 +62,29 @@ class Cenario extends BackObjeto{
             case  0:posX=   0;posY=630;sizeX=1080;sizeY= 20;break;//Chão
             case  1:posX=   0;posY=-50;sizeX=  20;sizeY=700;break;//Parede esquerda
             case  2:posX=1060;posY=-50;sizeX=  20;sizeY=700;break;//Parede direita
-            //Altura 1
+            //Escada 1
             case  3:posX=  20;posY=430;sizeX=  50;sizeY= 50;break;//Escada 1, bloco 1
             case  4:posX=  70;posY=480;sizeX=  50;sizeY= 50;break;//Escada 1, bloco 2
             case  5:posX= 120;posY=530;sizeX=  50;sizeY= 50;break;//Escada 1, bloco 3
             case  6:posX= 170;posY=580;sizeX=  50;sizeY= 50;break;//Escada 1, bloco 4
-            //Altura 2
-            case  7:posX= 120;posY=390;sizeX= 401;sizeY= 10;break;//Plataforma esquerda
-            case  8:posX= 570;posY=390;sizeX= 401;sizeY= 10;break;//Plataforma direita
-            /*/Altura 3
-            case 11:posX= 960;posY=490;sizeX=  50;sizeY= 50;break;//Plataforma esquerda
-            case 12:posX=1010;posY=440;sizeX=  50;sizeY= 50;break;//Plataforma direita
-            case 13:posX= 960;posY=490;sizeX=  50;sizeY= 50;break;//Plataforma esquerda
-            case 14:posX=1010;posY=440;sizeX=  50;sizeY= 50;break;//Plataforma direita//*/
+            //Corredor 2
+            case  7:posX= 150;posY=410;sizeX= 360;sizeY= 10;break;//Plataforma esquerda
+            case  8:posX= 570;posY=430;sizeX= 240;sizeY= 10;break;//Plataforma direita
+            case  9:posX= 860;posY=490;sizeX= 100;sizeY= 10;break;//Plataforma esquerda
+            //Escada 3
+            case 10:posX=1000;posY=420;sizeX=  60;sizeY= 50;break;//Plataforma direita
+            case 11:posX=1030;posY=370;sizeX=  30;sizeY= 50;break;//Plataforma esquerda
+            case 12:posX= 860;posY=490;sizeX= 100;sizeY= 10;break;//Plataforma direita
+            //Plataformas 4
+            case 13:posX= 860;posY=490;sizeX= 100;sizeY= 10;break;//Plataforma esquerda
+            case 14:posX= 860;posY=490;sizeX= 100;sizeY= 10;break;//Plataforma direita
+            case 15:posX= 860;posY=490;sizeX= 100;sizeY= 10;break;//Plataforma esquerda
+            case 16:posX= 860;posY=490;sizeX= 100;sizeY= 10;break;//Plataforma direita
+            //Desafio final 5
+            case 17:posX= 860;posY=490;sizeX= 100;sizeY= 10;break;//Plataforma esquerda
+            case 18:posX= 860;posY=490;sizeX= 100;sizeY= 10;break;//Plataforma direita
+            case 19:posX= 860;posY=490;sizeX= 100;sizeY= 10;break;//Plataforma esquerda
+            //*/
           }
     }
     //Retorna um retângulo com a hitBox do Objeto
@@ -78,36 +94,33 @@ class Cenario extends BackObjeto{
     }
 }
 
-//Classes Player 1 e Player 2 representam os personagens dos jogadores. São declarados como classes diferentes para facilitar aplicação de spriteSheets (e uma série de variáveis) diferentes.
+//Classe Player1 representa os personagens dos jogadores. São declarados como instâncias da mesma classe
 class Player1 extends BackObjeto{
-    //Posição do Player1 (0,0 = canto esquerdo superior)
-    public static int posX = 300;
-    public static int posY = 20;
+    public int slotNumber;
+    //Posição do jogador (0,0 = canto esquerdo superior)
+    public int posX = 300;
+    public int posY = 20;
     /*************************************************************/
-    //Idênticas na inicialização entre Players:
+    //Idênticas na inicialização dos jogadores:
     //Controle de direções, registra quais estão bloqueadas
-    static boolean[] pathBlocked=new boolean[4];
-    static final int pathBlockedIndexDir=0;//DIREITA
-    static final int pathBlockedIndexCim=1;//CIMA
-    static final int pathBlockedIndexEsq=2;//ESQUERDA
-    static final int pathBlockedIndexBai=3;//BAIXO
+    public boolean[] pathBlocked=new boolean[4];
     //Controles de posição e estado
-    public static int sizeX = 20;//Tamanho do Player
-    public static int sizeY = 75;
-    public static int estado = PARADO;//O estado (ação) do Player
-    public static int estadoAnterior = PARADO;//O estado anterior do Player
-    public static int frameIntervalCount=0;//Contagem de frames das ações
-    public static int framePARADOIntervalCount=0;//Controle especial do estado PARADO (checagem de frames de ociosidade)
-    public static int direcao=ESQ;//Direção do Player
+    public int sizeX = 20;//Tamanho do jogador
+    public int sizeY = 75;
+    public int estado = PARADO;//O estado (ação) do jogador
+    public int estadoAnterior = PARADO;//O estado anterior do jogador
+    public int frameIntervalCount=0;//Contagem de frames das ações
+    public int framePARADOIntervalCount=0;//Controle especial do estado PARADO (checagem de frames de ociosidade)
+    public int direcao=ESQ;//Direção do jogador
     //Controles de velocidade
-    public static int velX=0;
-    public static int velY=0;
-    public static int maxVelX=5;
-    public static int maxVelY=4;
-    public static int duracaoPulo=0;
-    public static boolean temPulo=true;
+    public int velX=0;
+    public int velY=0;
+    public int maxVelX=5;
+    public int maxVelY=4;
+    public int duracaoPulo=0;
+    public boolean temPulo=true;
     //Executa as ações de cada frame, aplicando os inputs e colisões. Também atualiza o frame e estado do Objeto
-    public static void ExecutaAcao(String input){
+    public void ExecutaAcao(String input){
         Colisoes();//Checagem de colisões. Detecta quais direções estão bloqueadas
         ChecaOciosidade(input);//Conta os frames ociosos (parados), e muda o estado para parado caso necessário
         SetEstado(input);
@@ -115,39 +128,52 @@ class Player1 extends BackObjeto{
         SetPosition();
     }
     //Ajustes a posição, a partir da velocidade e colisões
-    static void SetPosition(){
-        if(velX<0&&!pathBlocked[pathBlockedIndexEsq]){posX+=velX;}
-        if(velX>0&&!pathBlocked[pathBlockedIndexDir]){posX+=velX;}
-        if(velY<0&&!pathBlocked[pathBlockedIndexCim]){posY+=velY;}
-        if(velY>0&&!pathBlocked[pathBlockedIndexBai]){posY+=velY;}
+    void SetPosition(){
+        if(velX<0&&!pathBlocked[pathBlockedIndexEsq]){
+            if(-velX<maxVelX)posX+=velX;
+            else posX-=maxVelX;
+        }
+        if(velX>0&&!pathBlocked[pathBlockedIndexDir]){
+            if(velX<maxVelX)posX+=velX;
+            else posX+=maxVelX;
+        }
+        if(velY<0&&!pathBlocked[pathBlockedIndexCim]){
+            if(-velY<maxVelY)posY+=velY;
+            else posY-=maxVelY;
+        }
+        if(velY>0&&!pathBlocked[pathBlockedIndexBai]){
+            if(velY<maxVelY)posY+=velY;
+            else posY+=maxVelY;
+        }
     }
-    static void SetVelocidade(String input){
+    void SetVelocidade(String input){
         frameIntervalCount++;
-        if(estadoAnterior!=estado){frameIntervalCount=0;System.out.println("Player1: frameCount=0");}
+        if(estadoAnterior!=estado){frameIntervalCount=0;System.out.println("Player"+slotNumber+": frameCount=0");}
         if(input.contains("d")||input.contains("D")){
             if(velX<0)velX=-1;
-            if(velX<maxVelX)velX++;
+            if(velX<=maxVelX)velX++;
+        }
+        else if(input.contains("a")||input.contains("A")){
+            if(velX>0)velX=1;
+            if(velX>=-maxVelX)velX--;
         }
         else if(velX>0)velX--;
-        if(input.contains("a")||input.contains("A")){
-            if(velX>0)velX=1;
-            if(velX>-maxVelX)velX--;
-        }
         else if(velX<0)velX++;
         if(estado==PULA){
-            if(estadoAnterior!=estado){duracaoPulo=24;}
-            if(duracaoPulo>0)velY=-(duracaoPulo/2)-2;
+            if(estadoAnterior!=estado){duracaoPulo=20;}
+            velY=-duracaoPulo;
             duracaoPulo--;
         }
-        if(velY<maxVelY&&!pathBlocked[pathBlockedIndexBai])velY++;
-        else if(pathBlocked[pathBlockedIndexBai])velY=0;
+        else if(!pathBlocked[pathBlockedIndexBai])velY++;
+        else if(velY>0)velY--;
+        else if(velY<0)velY++;
         if(input.contains("s")||input.contains("S")){posY+=1;}
         if(input.contains("w")||input.contains("W")){posY-=1;}
     }
     //Define o estado (ação) do Objeto, a partir dos inputs e colisões
-    static void SetEstado(String input){
+    void SetEstado(String input){
         estadoAnterior=estado;
-        if(velY==maxVelY)estado=CAI;//Caso esteja na velocidade limite de queda o estado é CAI
+        if(duracaoPulo==0&&!temPulo)estado=CAI;//Caso esteja na velocidade limite de queda o estado é CAI
         else if((input.contains(" ")&&temPulo)||(estado==PULA&&!temPulo)){estado=PULA;temPulo=false;}//Controle de pulo pela variável temPulo, resetada ao tocar no chão
         else if(input.contains("w")||input.contains("W")||input.contains("s")||input.contains("S")){estado=ANDA;}//Caso escadas e cordas sejam adicionadas, este estado será referente a elas
         else if(input.contains("a")||input.contains("A")||input.contains("d")||input.contains("D")){//Caso não esteja pulando nem caindo, e receba o input, anda
@@ -157,18 +183,18 @@ class Player1 extends BackObjeto{
         }
     }
     //Checa se o Player esta ocioso
-    static void ChecaOciosidade(String input){
-        if(input.isEmpty())framePARADOIntervalCount++;//Conta os frames que Player não recebeu nenhum input
+    void ChecaOciosidade(String input){
+        if(input.isEmpty())framePARADOIntervalCount++;//Conta os frames que jogador não recebeu nenhum input
         else framePARADOIntervalCount=0;//Caso Player receba algum input, reseta a contagem de frames sem input
-        if(framePARADOIntervalCount>=(12)&&estado!=CAI)estado=PARADO;//Caso Player não tenha recebido nenhum input por 12 frames (0.5s), muda seu estado para PARADO
+        if(framePARADOIntervalCount>=(12)&&estado!=CAI)estado=PARADO;//Caso jogador não tenha recebido nenhum input por 12 frames (0.5s), muda seu estado para PARADO
     }
     //Retorna um retângulo com a hitBox do Objeto
-    static Rectangle HitBox(){
+    Rectangle HitBox(){
         Rectangle hitBox=new Rectangle(posX,posY,sizeX,sizeY);
         return hitBox;
     }
     //Checagem de colisões do Objeto. (Se sua hitbox está sobrebosta a alguma outra)
-    static void Colisoes(){
+    void Colisoes(){
         pathBlocked[pathBlockedIndexEsq]=false;
         pathBlocked[pathBlockedIndexDir]=false;
         pathBlocked[pathBlockedIndexCim]=false;
@@ -189,7 +215,7 @@ class Player1 extends BackObjeto{
         }
         if(pathBlocked[pathBlockedIndexBai])temPulo=true;//Reset da variável temPulo, utilizada no controle do estado PULA
         /*referências cruzadas entre os Players*/ 
-        if(HitBox().intersects(Vitoria.HitBox())){Sala.EncerraPartida(0);}//0 equivale a este player (Player1)
+        if(HitBox().intersects(Vitoria.HitBox())){Sala.EncerraPartida(slotNumber);}//0:P1, 1:P2, etc
         /*
         if(HitBox().intersects(Player2.HitBox())){
             float relX=posX-Player2.posX;
@@ -201,12 +227,12 @@ class Player1 extends BackObjeto{
         }//*/
     }
 }
-
+/*LEGADO:
 class Player2 extends Player1{
     //Posição do Player2 (0,0 = canto esquerdo superior)
     public static int posX = 600;
     public static int posY = 20;
-    /*************************************************************/
+    /*************************************************************
     //Idênticas na inicialização entre Players:
     //Controle de direções, registra quais estão bloqueadas
     static boolean[] pathBlocked=new boolean[4];
@@ -312,7 +338,7 @@ class Player2 extends Player1{
             }
         }
         if(pathBlocked[pathBlockedIndexBai])temPulo=true;//Reset da variável temPulo, utilizada no controle do estado PULA
-        /*referências cruzadas entre os Players*/ 
+        /*referências cruzadas entre os Players/ 
         if(HitBox().intersects(Vitoria.HitBox())){Sala.EncerraPartida(1);}//1 equivale a este player (Player2)
         /*
         if(HitBox().intersects(Player1.HitBox())){
@@ -322,6 +348,7 @@ class Player2 extends Player1{
             if(relX<-((float)sizeX)*0.89)pathBlocked[pathBlockedIndexDir]=true;//Players se trombando pela Esquerda
             if(relY>(float)sizeY*0.96)pathBlocked[pathBlockedIndexCim]=true;//Players se trombando por baixo
             if(relY<(float)sizeY*0.96)pathBlocked[pathBlockedIndexBai]=true;//Players se trombando por cima
-        }//*/
+        }///
     }
 }
+*/
