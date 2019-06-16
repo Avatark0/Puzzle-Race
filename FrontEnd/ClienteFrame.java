@@ -17,6 +17,7 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener, Actio
   public static String inputLine;
   public static String outputString="0:1:";
   //Janela do jogo
+  static JPanel cards; //painel que usa CardLayout
   static JPanel janela;
   static JPanel menu;
   public static final int MENU = 0;
@@ -157,16 +158,16 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener, Actio
   ClienteFrame(){
     super("PuzzleRace");
     setPreferredSize(new Dimension(1098, 680));//1080+18;650+30
+    cards = new JPanel(new CardLayout());
     menu = new JPanel();
     btnJogar.addActionListener(this);
     btnSair.addActionListener(this);
     menu.add(btnJogar);
     menu.add(btnSair);
-    add(menu, BorderLayout.NORTH);
     janela=new Janela();//instancia a janela gráfica do jogo
-    add(janela, BorderLayout.CENTER);
-    janela.setVisible(false);
-    menu.setVisible(true);
+    cards.add(menu,"MENU");
+    cards.add(janela,"JANELA");
+    add(cards);
     addKeyListener(this);
     setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     setVisible(true);
@@ -189,8 +190,10 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener, Actio
   public void actionPerformed(ActionEvent e) {
     if(e.getSource() == btnJogar){
       estadoJogo = JOGO;
-      menu.setVisible(false);
-      janela.setVisible(true);
+      CardLayout cl = (CardLayout)(cards.getLayout());
+      cl.show(cards,"JANELA");
+      //menu.setVisible(false);
+      //janela.setVisible(true);
       os.println("pronto");os.flush();//jogador envia ao servidor string "pronto" ao clicar no botão jogar
       requestFocus();
     }else if(e.getSource() == btnSair){
