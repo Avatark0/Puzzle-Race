@@ -113,6 +113,7 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener, Actio
     public void paintComponent(Graphics g){
       super.paintComponent(g);
       g.drawImage(imgCenario[fundo], 0, 0, getSize().width, getSize().height, this);
+      g.drawRect(20,20,30,50);
       for(int i=0; i<Cenario.blocosNum; i++){
         int posX=0,posY=0,sizeX=0,sizeY=0;
         switch(i){
@@ -132,16 +133,16 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener, Actio
           //Escada 3
           case 10:posX=1000;posY=420;sizeX=  60;sizeY= 50;break;//Plataforma direita
           case 11:posX=1030;posY=370;sizeX=  30;sizeY= 50;break;//Plataforma esquerda
-          case 12:posX= 860;posY=490;sizeX= 100;sizeY= 10;break;//Plataforma direita
+          case 12:posX= 930;posY=300;sizeX=  50;sizeY= 10;break;//Plataforma direita
           //Plataformas 4
-          case 13:posX= 860;posY=490;sizeX= 100;sizeY= 10;break;//Plataforma esquerda
-          case 14:posX= 860;posY=490;sizeX= 100;sizeY= 10;break;//Plataforma direita
-          case 15:posX= 860;posY=490;sizeX= 100;sizeY= 10;break;//Plataforma esquerda
-          case 16:posX= 860;posY=490;sizeX= 100;sizeY= 10;break;//Plataforma direita
+          case 13:posX= 730;posY=280;sizeX= 100;sizeY= 10;break;//Plataforma esquerda
+          case 14:posX= 530;posY=250;sizeX=  60;sizeY= 10;break;//Plataforma direita
+          case 15:posX= 430;posY=180;sizeX=  40;sizeY= 10;break;//Plataforma esquerda
+          case 16:posX= 330;posY=110;sizeX=  20;sizeY= 10;break;//Plataforma direita
           //Desafio final 5
-          case 17:posX= 860;posY=490;sizeX= 100;sizeY= 10;break;//Plataforma esquerda
-          case 18:posX= 860;posY=490;sizeX= 100;sizeY= 10;break;//Plataforma direita
-          case 19:posX= 860;posY=490;sizeX= 100;sizeY= 10;break;//Plataforma esquerda
+          case 17:posX=  80;posY=270;sizeX=  10;sizeY= 10;break;//Plataforma esquerda
+          case 18:posX=  20;posY=200;sizeX=  20;sizeY= 10;break;//Plataforma direita
+          case 19:posX=  50;posY=  0;sizeX=  10;sizeY=130;break;//Plataforma esquerda
           //*/
         }
         g.drawRect(posX,posY,sizeX,sizeY);

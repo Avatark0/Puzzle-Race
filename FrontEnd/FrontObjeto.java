@@ -40,7 +40,7 @@ class Cenario extends FrontObjeto{
     public int posY=0;
     public int sizeX=100;//Tamanho do Objeto
     public int sizeY=100;
-    public static int blocosNum=14;
+    public static int blocosNum=20;
 }
 
 ///////////////////////////////////////////////////////////////////////
