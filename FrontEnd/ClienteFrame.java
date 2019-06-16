@@ -190,10 +190,10 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener, Actio
   
   public void actionPerformed(ActionEvent e) {
     if(e.getSource() == btnJogar){
-      System.out.println("btn jogar");
       estadoJogo = JOGO;
       menu.setVisible(false);
       janela.setVisible(true);
+      os.println("pronto");os.flush();//jogador envia ao servidor string "pronto" ao clicar no botão jogar
       requestFocus();
     }else if(e.getSource() == btnSair){
       FecharJogo();
@@ -227,15 +227,13 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener, Actio
     if(keyS)input=input.concat("s");
     if(keyD)input=input.concat("d");
     if(keySpace)input=input.concat(" ");
-    if(osSet)os.println(input);
+    if(osSet){os.println(input);os.flush();}
   }
-  
+  //Atualiza as posições dos Players de acordo com a inputLine
   static void AplicaInputsRecebidosDoServidor(String inputLine){
-    //Atualiza as posições dos Players de acordo com a inputLine
     /*formato de inputLine = 0:player1posX,player1posY,player1estado,player1direcao.1:player2posX,player2posY,player2estado,player2direcao*/
-    //Extrai os inputs individuais para cada Player
-    Player1.SetInputsRecebidosDoServidor(inputLine);
-    Player2.SetInputsRecebidosDoServidor(inputLine);
+    if(inputLine.contains("0:"))Player1.SetInputsRecebidosDoServidor(inputLine);
+    if(inputLine.contains("1:"))Player2.SetInputsRecebidosDoServidor(inputLine);
   }
 
   void FecharJogo(){
@@ -256,8 +254,8 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener, Actio
     Scanner is=null;
     //TENTATIVA DE CONEXÃO COM O SERVIDOR
     try{
-      //socket=new Socket("127.0.0.1", 80);
-      socket=new Socket("200.145.148.186", 80);
+      socket=new Socket("127.0.0.1", 80);
+      //socket=new Socket("200.145.148.186", 80);
       os=new PrintStream(socket.getOutputStream(), true);
       osSet=true;//Valida o estado da conexão com o servidor
       is=new Scanner(socket.getInputStream());

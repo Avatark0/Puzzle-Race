@@ -87,16 +87,16 @@ class Player1 extends FrontObjeto{
         sposY=posY-(descritor[ANDA][ALTURA]-sizeY)/2+sdifY;
     }
     /********************************************************************************************************************************/
+    //Extrai os inputs individuais do jogador
     public static void SetInputsRecebidosDoServidor(String inputLine){
         String[] valoresplayers = new String[4];
-        valoresplayers=inputLine.substring(inputLine.indexOf("0:")+2, inputLine.indexOf(".1:")).split(",");
+        valoresplayers=inputLine.substring(inputLine.indexOf("0:")+2,inputLine.indexOf(".0.")).split(",");
         posX = Integer.parseInt(valoresplayers[0]);
         posY = Integer.parseInt(valoresplayers[1]);
         estado = Integer.parseInt(valoresplayers[2]);
         direcao = Integer.parseInt(valoresplayers[3]);
         if(direcao==ESQ) direcaoReajuste = 0;
         else direcaoReajuste = descritor[ANDA][LARGURA] - sdifX*2;
-        //System.out.println("Player 1: posX: "+posX+", posY: "+posY+", estado: "+estado+", direcao: "+direcao);
     }
 
     Player1(){
@@ -179,14 +179,13 @@ class Player2 extends Player1{
     /********************************************************************************************************************************/
     public static void SetInputsRecebidosDoServidor(String inputLine){
         String[] valoresplayers = new String[4];
-        valoresplayers=inputLine.substring(inputLine.indexOf("1:")+2).split(",");
+        valoresplayers=inputLine.substring(inputLine.indexOf("1:")+2,inputLine.indexOf(".1.")).split(",");
         posX = Integer.parseInt(valoresplayers[0]);
         posY = Integer.parseInt(valoresplayers[1]);
         estado = Integer.parseInt(valoresplayers[2]);
         direcao = Integer.parseInt(valoresplayers[3]);
         if(direcao==ESQ) direcaoReajuste = 0;
         else direcaoReajuste = descritor[ANDA][LARGURA] - sdifX*2;
-      //  System.out.println("Player 2: posX: "+posX+", posY: "+posY+", estado: "+estado+", direcao: "+direcao);
     }
     Player2(){
         //ANDA
