@@ -48,8 +48,12 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener, Actio
   Image[] imgItens=new Image[2];
   BufferedImage[] imgFim= new BufferedImage[2];
   //Menu
-  Button btnJogar = new Button("Jogar");
-  Button btnSair = new Button("Sair");
+  JButton btnJogar;
+  JButton btnSair;
+  Image imgJogar;
+  Image imgSair;
+  ImageIcon icoSair;
+  ImageIcon icoJogar;
 
   //JANELA GRAFICA DO CLIENTE: CLASSE INTERNA, GERENCIA AS IMAGENS (passar para classe externa? Quais as vantegens/desvangens de ser uma classe interna?)
   class Janela extends JPanel{
@@ -185,10 +189,25 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener, Actio
     setPreferredSize(new Dimension(1098, 680));//1080+18;650+30
     cards = new JPanel(new CardLayout());
     menu = new Menu();
+    try{
+			imgJogar = ImageIO.read(new File("btnJogar.png"));
+      imgSair = ImageIO.read(new File("btnSair.png"));
+		}catch(IOException e){
+			JOptionPane.showMessageDialog(this,"A imagem nao pode ser carregada!\n"+e,"Erro",JOptionPane.ERROR_MESSAGE);
+			System.exit(1);
+    }
+    icoJogar = new ImageIcon(imgJogar);
+    icoSair = new ImageIcon(imgSair);
+    btnJogar = new JButton(icoJogar);
+    btnSair = new JButton(icoSair);
     btnJogar.addActionListener(this);
     btnSair.addActionListener(this);
-    //btnJogar.setBounds(100,100,100,100);
-    //btnSair.setBounds(200,200,100,100);
+    btnJogar.setBounds(680,398,339,92);
+    btnSair.setBounds(680,520,339,92);
+    //Color c = new Color(1,1,1,0);
+    //btnJogar.setBackground(c);
+    //btnSair.setBackground(c);
+    menu.setLayout(null);
     menu.add(btnJogar);
     menu.add(btnSair);
     janela=new Janela();//instancia a janela gráfica do jogo
