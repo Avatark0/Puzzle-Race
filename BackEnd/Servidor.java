@@ -188,8 +188,8 @@ class Sala extends Thread{
               if(jogadorPronto[i]==true)contAux--;
             if(contAux==0){
               for(int i=0;i<MAXPLAYERS;i++){
-                os[slotNumber].println("pronto");
-                os[slotNumber].flush();
+                os[i].println("pronto");
+                os[i].flush();
               }
               setCenario();
               new Thread(new BackFPS()).start();

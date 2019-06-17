@@ -166,15 +166,15 @@ class Player1 extends BackObjeto{
         else if(!pathBlocked[pathBlockedIndexBai])velY++;
         else if(velY>0)velY--;
         else if(velY<0)velY++;
-        if(input.contains("s")||input.contains("S")){posY+=1;}
-        if(input.contains("w")||input.contains("W")){posY-=1;}
+        //if(input.contains("s")||input.contains("S")){posY+=1;}
+        //if(input.contains("w")||input.contains("W")){posY-=1;}
     }
     //Define o estado (ação) do Objeto, a partir dos inputs e colisões
     void SetEstado(String input){
         estadoAnterior=estado;
         if(duracaoPulo==0&&!temPulo)estado=CAI;//Caso esteja na velocidade limite de queda o estado é CAI
         else if((input.contains(" ")&&temPulo)||(estado==PULA&&!temPulo)){estado=PULA;temPulo=false;}//Controle de pulo pela variável temPulo, resetada ao tocar no chão
-        else if(input.contains("w")||input.contains("W")||input.contains("s")||input.contains("S")){estado=ANDA;}//Caso escadas e cordas sejam adicionadas, este estado será referente a elas
+        //else if(input.contains("w")||input.contains("W")||input.contains("s")||input.contains("S")){estado=ANDA;}//Caso escadas e cordas sejam adicionadas, este estado será referente a elas
         else if(input.contains("a")||input.contains("A")||input.contains("d")||input.contains("D")){//Caso não esteja pulando nem caindo, e receba o input, anda
             estado=ANDA;
             if(input.contains("a")||input.contains("A"))direcao=ESQ;
@@ -200,6 +200,7 @@ class Player1 extends BackObjeto{
         pathBlocked[pathBlockedIndexBai]=false;
         //NOTA: a sensibilidade do intersect é de ~2 pixels. (Intervalos menores não são reconhecidos)
         if(HitBox().intersects(new Rectangle()));//Checagem com items.
+        
         for(int i=0; i<Cenario.blocosNum; i++){//Checagem com cenario. (Checa todos os blocos individualmente)
             if(HitBox().intersects(Sala.cenario[i].HitBox())){
                 if((float)(posX+sizeX)*0.98>Sala.cenario[i].posX && (float)(posX)*0.98<Sala.cenario[i].posX+Sala.cenario[i].sizeX){
@@ -213,7 +214,7 @@ class Player1 extends BackObjeto{
             }
         }
         if(pathBlocked[pathBlockedIndexBai])temPulo=true;//Reset da variável temPulo, utilizada no controle do estado PULA
-        /*referências cruzadas entre os Players*/ 
+        //referências cruzadas entre os Players 
         if(HitBox().intersects(Vitoria.HitBox())){Sala.EncerraPartida(slotNumber);}//0:P1, 1:P2, etc
         /*
         if(HitBox().intersects(Player2.HitBox())){

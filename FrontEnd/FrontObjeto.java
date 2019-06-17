@@ -117,7 +117,7 @@ class Player1 extends FrontObjeto{
         descritor[CAI][ALTURA] = 155;
         descritor[CAI][COLS] = 16;
         descritor[CAI][ROWS] = 1;
-        descritor[CAI][NUM] = 16;
+        descritor[CAI][NUM] = 3;//Ajustado para reduzir uso de memória, valor real é 16
         //PARADO
         descritor[PARADO][LARGURA] = 164;
         descritor[PARADO][ALTURA] = 155;
@@ -148,26 +148,21 @@ class Player2 extends Player1{
     static int sposY=0;
     /********************************************************************************************************************************/
     //Variáveis de controle do Player2
-    public static int posX = 900;//Posição da hitBox (0,0 = canto esquerdo superior)
+    public static int posX = 900;//Posição do Player1 (0,0 = canto esquerdo superior)
     public static int posY = 550;
-    public static int sizeX = 20;//Tamanho do Player2
+    public static int sizeX = 20;//Tamanho do Player1
     public static int sizeY = 75;
-    public static int estado = PARADO;//O estado (ação) do Player2
+    public static int estado = PARADO;//O estado (ação) do Player1
     public static int estadoAnterior = 0;//Utilizado para checar mudança de estado
     public static int frame = 0;//O frame da animação do estado
     public static int framePARADOIntervalCount=0;//Controle especial do estado PARADO
-    public static int direcao=ESQ;//Direção do Player2
+    public static int direcao=ESQ;//Direção do Player1
     public static int direcaoReajuste=0;//Reajuste da posição do sprite invertido (*-1)
 
     //Executa as ações de cada frame, aplicando os inputs e colisões. Também atualiza o frame e estado do Objeto
-    public static void ExecutaAcao(){ //OBS: Função gêmea de Player1, se tiver algum erro olhar na outra classe <3
+    public static void ExecutaAcao(){
         SetFrame();
         SetSpritePosition();
-    }
-    static void SetSpritePosition(){
-        //Determinar a posição do sprite baseada na posição do objeto
-        sposX=posX-(descritor[ANDA][LARGURA]-sizeX)/2+sdifX;
-        sposY=posY-(descritor[ANDA][ALTURA]-sizeY)/2+sdifY;
     }
     static void SetFrame(){
         //if(estadoAnterior!=estado&&frame%(descritor[estado][NUM]/3)==0)frame=0;
@@ -175,6 +170,12 @@ class Player2 extends Player1{
         else if(frame==descritor[estado][NUM]-1&&(estado==CAI||estado==PULA));//Mantém o sprite no último frame da animação
         else if(frame>=descritor[estado][NUM]-1)frame=0;//Reseta o sprite da animação
         else frame++;//Avança o sprite da animação
+        estadoAnterior = estado;
+    }
+    static void SetSpritePosition(){
+        //Determinar a posição do sprite baseada na posição do objeto
+        sposX=posX-(descritor[ANDA][LARGURA]-sizeX)/2+sdifX;
+        sposY=posY-(descritor[ANDA][ALTURA]-sizeY)/2+sdifY;
     }
     /********************************************************************************************************************************/
     public static void SetInputsRecebidosDoServidor(String inputLine){
@@ -205,7 +206,7 @@ class Player2 extends Player1{
         descritor[CAI][ALTURA] = 141;
         descritor[CAI][COLS] = 8;
         descritor[CAI][ROWS] = 2;
-        descritor[CAI][NUM] = 16;
+        descritor[CAI][NUM] = 3;//Ajustado para reduzir uso de memória, valor real é 16
         //PARADO
         descritor[PARADO][LARGURA] = 124;
         descritor[PARADO][ALTURA] = 141;

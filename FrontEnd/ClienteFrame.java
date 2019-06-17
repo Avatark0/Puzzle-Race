@@ -56,8 +56,8 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener, Actio
     //Determina propriedades da janela e carrega os sprites.
     Janela(){
       try{
-        imgCenario[0]=ImageIO.read(new File("fundo.jpeg"));
-        imgCenario[1]=ImageIO.read(new File("fundo2.jpeg"));
+        imgCenario[0]=ImageIO.read(new File("Jogo.png"));
+        //imgCenario[1]=ImageIO.read(new File("fundo2.jpeg"));
         imgFim[0] = ImageIO.read(new File("vitoria1.png"));
         imgFim[1] = ImageIO.read(new File("vitoria2.png"));
         //P1
@@ -113,7 +113,7 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener, Actio
     public void paintComponent(Graphics g){
       super.paintComponent(g);
       g.drawImage(imgCenario[fundo], 0, 0, getSize().width, getSize().height, this);
-      g.drawRect(21,186,10,14);
+     /* g.drawRect(21,186,10,14);
       for(int i=0; i<Cenario.blocosNum; i++){
         int posX=0,posY=0,sizeX=0,sizeY=0;
         switch(i){
@@ -142,10 +142,10 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener, Actio
           //Desafio final 5
           case 17:posX=  80;posY=270;sizeX=  10;sizeY= 10;break;//Plataforma esquerda
           case 18:posX=  20;posY=200;sizeX=  20;sizeY= 10;break;//Plataforma direita
-          //*/
+          //
         }
         g.drawRect(posX,posY,sizeX,sizeY);
-      }
+      }*/
       switch(Player1.estado){
         case Player1.ANDA:g.drawImage(p1anda[Player1.frame], Player1.sposX+Player1.direcaoReajuste, Player1.sposY, Player1.direcao*Player1.descritor[Player1.estado][Player1.LARGURA],Player1.descritor[Player1.estado][Player1.ALTURA],this);break;
         case Player1.PULA:g.drawImage(p1pula[Player1.frame], Player1.sposX+Player1.direcaoReajuste, Player1.sposY, Player1.direcao*Player1.descritor[Player1.estado][Player1.LARGURA],Player1.descritor[Player1.estado][Player1.ALTURA],this);break;
@@ -164,14 +164,31 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener, Actio
     }
   }
 
+  class Menu extends JPanel{
+	Menu(){
+		try{
+			imgCenario[1]=ImageIO.read(new File("Menu.png"));
+		}catch(IOException e){
+			JOptionPane.showMessageDialog(this,"A imagem nao pode ser carregada!\n"+e,"Erro",JOptionPane.ERROR_MESSAGE);
+			System.exit(1);
+		}
+	}
+	public void paintComponent(Graphics g){
+      super.paintComponent(g);
+	  g.drawImage(imgCenario[1], 0, 0, getSize().width, getSize().height, this);
+	}
+  }
+
   //Construtor: instancia a Janela.
   ClienteFrame(){
     super("PuzzleRace");
     setPreferredSize(new Dimension(1098, 680));//1080+18;650+30
     cards = new JPanel(new CardLayout());
-    menu = new JPanel();
+    menu = new Menu();
     btnJogar.addActionListener(this);
     btnSair.addActionListener(this);
+    //btnJogar.setBounds(100,100,100,100);
+    //btnSair.setBounds(200,200,100,100);
     menu.add(btnJogar);
     menu.add(btnSair);
     janela=new Janela();//instancia a janela gráfica do jogo
@@ -182,12 +199,9 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener, Actio
     setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
     setVisible(true);
     pack();
-    /*//////Em construção:
-    addFocusListener(new FocusAdapter() {
-      public void focusGained(FocusEvent foco){
-        if(estadoJogo==JOGO)janela.requestFocusInWindow();
-      }
-    });//*/
+	////////////////
+	menu.repaint();
+    ////////////////
   }
   
   static boolean keyA=false;
@@ -200,11 +214,8 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener, Actio
   public void actionPerformed(ActionEvent e) {
     if(e.getSource() == btnJogar){
       estadoJogo = JOGO;
-      CardLayout cl = (CardLayout)(cards.getLayout());
-      cl.show(cards,"JANELA");
-      //menu.setVisible(false);
-      //janela.setVisible(true);
       os.println("pronto");os.flush();//jogador envia ao servidor string "pronto" ao clicar no botão jogar
+      menu.repaint();
       requestFocus();
     }else if(e.getSource() == btnSair){
       FecharJogo();
@@ -284,7 +295,11 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener, Actio
           if(inputLine.contains("0")) VITORIA = 0;
           if(inputLine.contains("1")) VITORIA = 1;
         }
-        else if(inputLine.contains("pronto")){}
+        else if(inputLine.contains("pronto")){
+          System.out.println("PRONTO");
+          CardLayout cl = (CardLayout)(cards.getLayout());
+          cl.show(cards,"JANELA");
+        }
         else if(!inputLine.equals("::"))AplicaInputsRecebidosDoServidor(inputLine);
       }while(!inputLine.equals("::"));//Comando de encerramento da conexão pelo cliente
       //CONEXÃO ENCERRADA
