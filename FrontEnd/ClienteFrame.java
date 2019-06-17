@@ -113,7 +113,7 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener, Actio
     public void paintComponent(Graphics g){
       super.paintComponent(g);
       g.drawImage(imgCenario[fundo], 0, 0, getSize().width, getSize().height, this);
-      g.drawRect(20,20,30,50);
+      g.drawRect(21,186,10,14);
       for(int i=0; i<Cenario.blocosNum; i++){
         int posX=0,posY=0,sizeX=0,sizeY=0;
         switch(i){
@@ -142,7 +142,6 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener, Actio
           //Desafio final 5
           case 17:posX=  80;posY=270;sizeX=  10;sizeY= 10;break;//Plataforma esquerda
           case 18:posX=  20;posY=200;sizeX=  20;sizeY= 10;break;//Plataforma direita
-          case 19:posX=  50;posY=  0;sizeX=  10;sizeY=130;break;//Plataforma esquerda
           //*/
         }
         g.drawRect(posX,posY,sizeX,sizeY);
@@ -285,6 +284,7 @@ public class ClienteFrame extends JFrame implements Runnable, KeyListener, Actio
           if(inputLine.contains("0")) VITORIA = 0;
           if(inputLine.contains("1")) VITORIA = 1;
         }
+        else if(inputLine.contains("pronto")){}
         else if(!inputLine.equals("::"))AplicaInputsRecebidosDoServidor(inputLine);
       }while(!inputLine.equals("::"));//Comando de encerramento da conexão pelo cliente
       //CONEXÃO ENCERRADA

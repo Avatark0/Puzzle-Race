@@ -33,10 +33,10 @@ public class BackObjeto extends JFrame{
 }
 
 class Vitoria extends BackObjeto{
-    public static int posX=20;//Posição da hitBox (0,0 = canto esquerdo superior)
-    public static int posY=20;
-    public static int sizeX=30;//Tamanho do Objeto
-    public static int sizeY=50;
+    public static int posX=21;//Posição da hitBox (0,0 = canto esquerdo superior)
+    public static int posY=186;
+    public static int sizeX=10;//Tamanho do Objeto
+    public static int sizeY=14;
     //Retorna um retângulo com a hitBox do Objeto
     static Rectangle HitBox(){
         Rectangle hitBox=new Rectangle(posX,posY,sizeX,sizeY);
@@ -51,8 +51,8 @@ class Cenario extends BackObjeto{
     //Variáveis de controle do Cenario
     public int posX=0;//Posição da hitBox (0,0 = canto esquerdo superior)
     public int posY=0;
-    public int sizeX=100;//Tamanho do Objeto
-    public int sizeY=100;
+    public int sizeX=0;//Tamanho do Objeto
+    public int sizeY=0;
     public int maxX=1098;//Tamanho da tela X (1080 + 18 do contorno(?))
     public int maxY=680;//Tamanho da tela Y (650 + 30 da barra  de opções da janela)
     //Construtor
@@ -83,7 +83,6 @@ class Cenario extends BackObjeto{
             //Desafio final 5
             case 17:posX=  80;posY=270;sizeX=  10;sizeY= 10;break;//Plataforma esquerda
             case 18:posX=  20;posY=200;sizeX=  20;sizeY= 10;break;//Plataforma direita
-            case 19:posX=  50;posY=  0;sizeX=  10;sizeY=130;break;//Plataforma esquerda
             //*/
           }
     }
@@ -98,8 +97,8 @@ class Cenario extends BackObjeto{
 class Player1 extends BackObjeto{
     public int slotNumber;
     //Posição do jogador (0,0 = canto esquerdo superior)
-    public int posX = 300;
-    public int posY = 20;
+    public int posX = 900;
+    public int posY = 550;
     /*************************************************************/
     //Idênticas na inicialização dos jogadores:
     //Controle de direções, registra quais estão bloqueadas

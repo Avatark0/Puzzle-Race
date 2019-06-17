@@ -57,8 +57,8 @@ class Player1 extends FrontObjeto{
     static int sposY=0;
     /********************************************************************************************************************************/
     //Variáveis de controle do Player1
-    public static int posX = 50;//Posição do Player1 (0,0 = canto esquerdo superior)
-    public static int posY = 20;
+    public static int posX = 900;//Posição do Player1 (0,0 = canto esquerdo superior)
+    public static int posY = 550;
     public static int sizeX = 20;//Tamanho do Player1
     public static int sizeY = 75;
     public static int estado = PARADO;//O estado (ação) do Player1
@@ -148,8 +148,8 @@ class Player2 extends Player1{
     static int sposY=0;
     /********************************************************************************************************************************/
     //Variáveis de controle do Player2
-    public static int posX = 350;//Posição da hitBox (0,0 = canto esquerdo superior)
-    public static int posY = 50;
+    public static int posX = 900;//Posição da hitBox (0,0 = canto esquerdo superior)
+    public static int posY = 550;
     public static int sizeX = 20;//Tamanho do Player2
     public static int sizeY = 75;
     public static int estado = PARADO;//O estado (ação) do Player2
